@@ -32,43 +32,60 @@ export default function EmployeeAttendancePage() {
         }
     }
 
-    if (loading) return <div style={{ textAlign: 'center', padding: '10rem' }}><h2>Loading Session Logs...</h2></div>;
+    if (loading) return (
+        <div className="flex h-96 items-center justify-center">
+            <h2 className="text-2xl font-black animate-pulse opacity-50 uppercase tracking-[0.3em]">Accessing Session History...</h2>
+        </div>
+    );
 
     return (
-        <div className="animate-fade">
-            <div style={{ marginBottom: '3rem' }}>
-                <span style={{ color: 'var(--primary)', fontWeight: '600', textTransform: 'uppercase', fontSize: '0.8rem', letterSpacing: '2px' }}>Personal Records</span>
-                <h1>My Attendance History</h1>
-                <p style={{ color: 'var(--text-muted)' }}>Detailed log of all your recorded sessions</p>
-            </div>
+        <div className="flex flex-col gap-12 animate-fade-in">
+            <header className="flex justify-between items-end">
+                <div>
+                    <h3 className="text-indigo-400">Personal Records</h3>
+                    <h1>Session History</h1>
+                    <p className="max-w-md">Detailed cryptographic log of all your recorded operational sessions.</p>
+                </div>
+                <div className="badge-premium bg-indigo-600/10 text-indigo-400 border border-indigo-600/20 px-8 py-4">
+                    SYNCED: {new Date().toLocaleTimeString()}
+                </div>
+            </header>
 
-            <div className="glass-card">
-                <div style={{ overflowX: 'auto' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+            <div className="bento-card overflow-hidden p-0 border-white/5 bg-black/20">
+                <div className="px-8 pt-8 pb-4 border-b border-white/5 bg-white/5">
+                    <h2 className="text-xl font-black mb-0 flex items-center gap-4 text-white">
+                        <div className="w-2 h-6 bg-cyan-400 rounded-full shadow-[0_0_8px_rgba(34,211,238,0.8)]"></div>
+                        DATA LOG ENTRIES
+                    </h2>
+                </div>
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr style={{ background: 'rgba(255,255,255,0.02)' }}>
-                                <th style={{ padding: '1.2rem', color: 'var(--text-muted)' }}>DATE</th>
-                                <th style={{ padding: '1.2rem', color: 'var(--text-muted)' }}>STATUS</th>
-                                <th style={{ padding: '1.2rem', color: 'var(--text-muted)' }}>CHECK-IN</th>
-                                <th style={{ padding: '1.2rem', color: 'var(--text-muted)' }}>UPDATED AT</th>
+                            <tr className="bg-white/5 border-b border-white/10 text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400">
+                                <th className="p-6">CYCLE DATE</th>
+                                <th className="p-6">STATUS CODE</th>
+                                <th className="p-6">CHECK-IN TIME</th>
+                                <th className="p-6">LAST METADATA UPDATE</th>
                             </tr>
                         </thead>
                         <tbody>
                             {attendance.length === 0 ? (
-                                <tr><td colSpan="4" style={{ padding: '5rem', textAlign: 'center' }}>No attendance records found.</td></tr>
+                                <tr><td colSpan="4" className="p-24 text-center text-xl font-black opacity-30 tracking-widest italic uppercase">Zero session logs detected.</td></tr>
                             ) : (
                                 attendance.map(a => (
-                                    <tr key={a._id} style={{ borderBottom: '1px solid var(--border)' }}>
-                                        <td style={{ padding: '1.2rem', fontWeight: '500' }}>
+                                    <tr key={a._id} className="border-b border-white/5 hover:bg-white/5 transition-all group">
+                                        <td className="p-6 text-sm font-black text-white group-hover:text-cyan-400 transition-colors">
                                             {new Date(a.date).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}
                                         </td>
-                                        <td style={{ padding: '1.2rem' }}>
-                                            <span className={`badge ${a.status === 'Present' ? 'badge-success' : 'badge-danger'}`}>
-                                                {a.status}
+                                        <td className="p-6">
+                                            <span className={`badge-premium ${a.status === 'Present' ? 'bg-emerald-600/20 text-emerald-400 border-emerald-600/30' : a.status === 'Half-Day' ? 'bg-amber-600/20 text-amber-500 border-amber-600/30' : 'bg-red-600/20 text-red-500 border-red-600/30'}`}>
+                                                {a.status.toUpperCase()}
                                             </span>
                                         </td>
-                                        <td style={{ padding: '1.2rem' }}>{a.checkIn ? new Date(a.checkIn).toLocaleTimeString() : '-'}</td>
-                                        <td style={{ padding: '1.2rem', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                                        <td className="p-6 font-mono text-indigo-400">
+                                            {a.checkIn ? new Date(a.checkIn).toLocaleTimeString([], { hour12: true, hour: '2-digit', minute: '2-digit' }) : 'NULL'}
+                                        </td>
+                                        <td className="p-6 text-xs text-gray-500 font-medium">
                                             {new Date(a.updatedAt).toLocaleString()}
                                         </td>
                                     </tr>

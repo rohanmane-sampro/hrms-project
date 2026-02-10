@@ -16,7 +16,6 @@ export default function RegisterPage() {
     });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
-
     const [showPassword, setShowPassword] = useState(false);
 
     async function handleSubmit(e) {
@@ -43,82 +42,69 @@ export default function RegisterPage() {
     }
 
     return (
-        <div style={{
-            minHeight: '100vh',
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: 'radial-gradient(circle at 10% 20%, #0f172a 0%, #1e1b4b 100%)'
-        }}>
-            <div className="glass-card animate-fade" style={{ width: '500px' }}>
-                <h2 style={{ textAlign: 'center', marginBottom: '0.5rem' }}>Create Admin</h2>
-                <p style={{ textAlign: 'center', color: 'var(--text-muted)', marginBottom: '2rem' }}>Setup your professional dashboard</p>
+        <div className="min-h-screen w-full flex items-center justify-center p-8 relative overflow-hidden">
+            <div className="bento-card w-full max-w-xl p-12 relative animate-fade-in border-white/5">
+                <div className="text-center mb-12">
+                    <div className="w-16 h-16 rounded-2xl bg-indigo-600 flex items-center justify-center mx-auto mb-8 shadow-xl shadow-indigo-600/40 transform rotate-3">
+                        <span className="text-3xl">🛡️</span>
+                    </div>
+                    <h3 className="text-indigo-400">Admin Registration</h3>
+                    <h1 className="text-4xl mb-2 tracking-tighter text-white">Create Account</h1>
+                    <p className="font-bold opacity-50 uppercase tracking-widest text-[10px]">Sign up for an administrator account</p>
+                </div>
 
                 {error && (
-                    <div style={{ background: 'rgba(239, 68, 68, 0.1)', color: 'var(--danger)', padding: '1rem', borderRadius: '1rem', marginBottom: '1.5rem', textAlign: 'center' }}>
-                        {error}
+                    <div className="bg-red-500/10 border border-red-500/20 text-red-500 p-6 rounded-2xl mb-8 text-xs font-black uppercase tracking-widest text-center animate-pulse">
+                        ⚠️ Registration failed: {error}
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-                    <div className="grid grid-2" style={{ gap: '1rem' }}>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                            <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>First Name</label>
-                            <input className="input-premium" required onChange={e => setForm({ ...form, firstName: e.target.value })} />
+                <form onSubmit={handleSubmit} className="flex flex-col gap-8">
+                    <div className="grid grid-cols-2 gap-6">
+                        <div className="flex flex-col gap-3">
+                            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 px-6">First Name</label>
+                            <input className="glass-input py-4 px-6 text-white" required onChange={e => setForm({ ...form, firstName: e.target.value })} placeholder="John" />
                         </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                            <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Last Name</label>
-                            <input className="input-premium" required onChange={e => setForm({ ...form, lastName: e.target.value })} />
+                        <div className="flex flex-col gap-3">
+                            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 px-6">Last Name</label>
+                            <input className="glass-input py-4 px-6 text-white" required onChange={e => setForm({ ...form, lastName: e.target.value })} placeholder="Doe" />
                         </div>
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                        <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Email Address</label>
-                        <input type="email" className="input-premium" required onChange={e => setForm({ ...form, email: e.target.value })} />
+
+                    <div className="flex flex-col gap-3">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 px-6">Email Address</label>
+                        <input type="email" className="glass-input py-4 px-6 text-white" required onChange={e => setForm({ ...form, email: e.target.value })} placeholder="admin@company.com" />
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                        <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Password</label>
-                        <div style={{ position: 'relative' }}>
+
+                    <div className="flex flex-col gap-3">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 px-6">Password</label>
+                        <div className="relative">
                             <input
                                 type={showPassword ? "text" : "password"}
                                 placeholder="Min 6 characters"
-                                className="input-premium"
+                                className="glass-input py-4 px-6 pr-16 text-white"
                                 required
                                 onChange={e => setForm({ ...form, password: e.target.value })}
-                                style={{ paddingRight: '3.5rem' }}
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                style={{
-                                    position: 'absolute',
-                                    right: '1rem',
-                                    top: '50%',
-                                    transform: 'translateY(-50%)',
-                                    background: 'transparent',
-                                    border: 'none',
-                                    cursor: 'pointer',
-                                    fontSize: '1.2rem',
-                                    opacity: 0.6,
-                                    transition: 'opacity 0.2s'
-                                }}
-                                onMouseEnter={(e) => e.target.style.opacity = 1}
-                                onMouseLeave={(e) => e.target.style.opacity = 0.6}
+                                className="absolute right-6 top-1/2 -translate-y-1/2 text-xl opacity-40 hover:opacity-100 transition-opacity"
                             >
                                 {showPassword ? '👁️' : '👁️‍🗨️'}
                             </button>
                         </div>
                     </div>
 
-                    <button type="submit" disabled={loading} className="btn-premium" style={{ justifyContent: 'center', padding: '1rem' }}>
-                        {loading ? 'Creating Account...' : 'Finish Registration'}
+                    <button type="submit" disabled={loading} className="btn-action btn-primary w-full py-6 text-sm mt-4 tracking-[0.2em]">
+                        {loading ? 'REGISTERING...' : 'REGISTER ACCOUNT'}
                     </button>
                 </form>
 
-                <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
-                    <a href="/login" style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
-                        Already registered? <span style={{ color: 'var(--primary)', fontWeight: '600' }}>Sign In</span>
-                    </a>
+                <div className="mt-12 pt-8 border-t border-white/5 text-center">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                        Already have an account? <a href="/login" className="text-indigo-400 hover:text-white transition-all ml-2">Login Here</a>
+                    </p>
                 </div>
             </div>
         </div>

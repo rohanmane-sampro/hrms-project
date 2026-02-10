@@ -1,8 +1,6 @@
 "use client";
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-
-// Import the Admin Dashboard UI components (we'll keep them here for now or move to a component)
 import AdminDashboard from '@/components/AdminDashboard';
 
 export default function Home() {
@@ -35,28 +33,24 @@ export default function Home() {
 
     if (loading) {
         return (
-            <div style={{
-                height: '100vh',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                background: 'var(--bg-main)'
-            }}>
-                <div style={{ textAlign: 'center' }}>
-                    <div style={{
-                        width: '50px',
-                        height: '50px',
-                        border: '3px solid var(--border)',
-                        borderTopColor: 'var(--primary)',
-                        borderRadius: '50%',
-                        animation: 'spin 1s linear infinite',
-                        margin: '0 auto 1.5rem'
-                    }}></div>
-                    <h2 style={{ color: 'var(--text-muted)' }}>Verifying Session...</h2>
-                    <style>{`
-            @keyframes spin { to { transform: rotate(360deg); } }
-          `}</style>
+            <div className="fixed inset-0 bg-[#0a0a0a] flex items-center justify-center z-[9999]">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-600/10 blur-[120px] rounded-full animate-pulse"></div>
+                <div className="flex flex-col items-center gap-12 relative">
+                    <div className="relative">
+                        <div className="w-24 h-24 rounded-3xl border-2 border-indigo-600/20 flex items-center justify-center animate-spin duration-[3000ms]">
+                            <div className="w-12 h-12 rounded-xl bg-indigo-600 shadow-[0_0_30px_rgba(99,102,241,0.6)]"></div>
+                        </div>
+                        <div className="absolute inset-0 w-24 h-24 rounded-3xl border-2 border-cyan-400/20 animate-reverse-spin"></div>
+                    </div>
+                    <div className="text-center">
+                        <h1 className="text-2xl font-black tracking-[0.4em] uppercase text-white mb-2 leading-none">Initializing Nexus</h1>
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400 opacity-60">Synchronizing Neural Workspace...</p>
+                    </div>
                 </div>
+                <style>{`
+                    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+                    .animate-reverse-spin { animation: spin 4s linear infinite reverse; }
+                 `}</style>
             </div>
         );
     }

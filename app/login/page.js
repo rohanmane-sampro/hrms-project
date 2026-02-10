@@ -7,7 +7,6 @@ export default function LoginPage() {
     const [form, setForm] = useState({ email: '', password: '' });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
-
     const [showPassword, setShowPassword] = useState(false);
 
     async function handleSubmit(e) {
@@ -41,52 +40,29 @@ export default function LoginPage() {
     }
 
     return (
-        <div style={{
-            height: '100vh',
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: 'radial-gradient(circle at 50% 50%, #1e1b4b 0%, #0f172a 100%)'
-        }}>
-            <div className="glass-card animate-fade" style={{ width: '420px', textAlign: 'center' }}>
-                <div style={{ marginBottom: '2rem' }}>
-                    <div style={{
-                        width: '60px',
-                        height: '60px',
-                        background: 'var(--grad-primary)',
-                        borderRadius: '15px',
-                        margin: '0 auto 1.5rem',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '1.5rem'
-                    }}>
-                        ⚡
+        <div className="min-h-screen w-full flex items-center justify-center p-8 relative overflow-hidden">
+            <div className="bento-card w-full max-w-lg p-12 relative animate-fade-in border-white/5">
+                <div className="text-center mb-12">
+                    <div className="w-16 h-16 rounded-2xl bg-indigo-600 flex items-center justify-center mx-auto mb-8 shadow-xl shadow-indigo-600/40 transform -rotate-3">
+                        <span className="text-3xl">💠</span>
                     </div>
-                    <h2 style={{ marginBottom: '0.5rem' }}>Pro HRMS</h2>
-                    <p style={{ color: 'var(--text-muted)' }}>Sign in to manage your workspace</p>
+                    <h3 className="text-indigo-400">User Login</h3>
+                    <h1 className="text-4xl mb-2 tracking-tighter text-white">Welcome Back</h1>
+                    <p className="font-bold opacity-50 uppercase tracking-widest text-[10px]">Please sign in to your account</p>
                 </div>
 
                 {error && (
-                    <div style={{
-                        background: 'rgba(239, 68, 68, 0.1)',
-                        color: 'var(--danger)',
-                        padding: '1rem',
-                        borderRadius: '1rem',
-                        marginBottom: '1.5rem',
-                        fontSize: '0.9rem'
-                    }}>
-                        {error}
+                    <div className="bg-red-500/10 border border-red-500/20 text-red-500 p-6 rounded-2xl mb-8 text-xs font-black uppercase tracking-widest text-center animate-pulse">
+                        ⚠️ Login failed: {error}
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="flex flex-col gap-4" style={{ textAlign: 'left' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                        <label style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginLeft: '0.5rem' }}>Email Address</label>
+                <form onSubmit={handleSubmit} className="flex flex-col gap-8">
+                    <div className="flex flex-col gap-3">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 px-6">Email Address</label>
                         <input
                             type="email"
-                            className="input-premium"
+                            className="glass-input py-6 text-white"
                             placeholder="name@company.com"
                             required
                             value={form.email}
@@ -94,35 +70,21 @@ export default function LoginPage() {
                         />
                     </div>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                        <label style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginLeft: '0.5rem' }}>Password</label>
-                        <div style={{ position: 'relative' }}>
+                    <div className="flex flex-col gap-3">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 px-6">Password</label>
+                        <div className="relative">
                             <input
                                 type={showPassword ? "text" : "password"}
-                                className="input-premium"
-                                placeholder="••••••••"
+                                className="glass-input pr-16 py-6 text-white"
+                                placeholder="Enter your password"
                                 required
                                 value={form.password}
                                 onChange={e => setForm({ ...form, password: e.target.value })}
-                                style={{ paddingRight: '3.5rem' }}
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                style={{
-                                    position: 'absolute',
-                                    right: '1rem',
-                                    top: '50%',
-                                    transform: 'translateY(-50%)',
-                                    background: 'transparent',
-                                    border: 'none',
-                                    cursor: 'pointer',
-                                    fontSize: '1.2rem',
-                                    opacity: 0.6,
-                                    transition: 'opacity 0.2s'
-                                }}
-                                onMouseEnter={(e) => e.target.style.opacity = 1}
-                                onMouseLeave={(e) => e.target.style.opacity = 0.6}
+                                className="absolute right-6 top-1/2 -translate-y-1/2 text-xl opacity-40 hover:opacity-100 transition-opacity"
                             >
                                 {showPassword ? '👁️' : '👁️‍🗨️'}
                             </button>
@@ -131,17 +93,16 @@ export default function LoginPage() {
 
                     <button
                         type="submit"
-                        className="btn-premium"
+                        className="btn-action btn-primary w-full py-6 text-sm mt-4 tracking-[0.2em]"
                         disabled={loading}
-                        style={{ marginTop: '1rem', width: '100%', justifyContent: 'center' }}
                     >
-                        {loading ? 'Authenticating...' : 'Sign In Now'}
+                        {loading ? 'LOGGING IN...' : 'SIGN IN'}
                     </button>
                 </form>
 
-                <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border)' }}>
-                    <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                        New Administrator? <a href="/register" style={{ color: 'var(--primary)', fontWeight: '600' }}>Create Account</a>
+                <div className="mt-12 pt-8 border-t border-white/5 text-center">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                        New Admin? <a href="/register" className="text-indigo-400 hover:text-white transition-all ml-2">Register Here</a>
                     </p>
                 </div>
             </div>

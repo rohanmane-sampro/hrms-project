@@ -28,6 +28,15 @@ export async function DELETE(request, { params }) {
         await dbConnect();
         const { id } = await params;
 
+        // 1. Delete associated leaves
+        const Leave = (await import('@/models/Leave')).default;
+        await Leave.deleteMany({ employeeId: id });
+
+        // 2. Delete associated attendance records
+        const Attendance = (await import('@/models/Attendance')).default;
+        await Attendance.deleteMany({ employeeId: id });
+
+        // 3. Delete the employee
         const deletedEmployee = await Employee.deleteOne({ _id: id });
 
         if (!deletedEmployee) {

@@ -24,7 +24,10 @@ export async function GET(request) {
             .populate('employeeId', 'firstName lastName department position')
             .sort({ createdAt: -1 });
 
-        return NextResponse.json({ success: true, data: records });
+        // Filter out orphaned records where employee was deleted
+        const filteredRecords = records.filter(record => record.employeeId !== null);
+
+        return NextResponse.json({ success: true, data: filteredRecords });
     } catch (error) {
         return NextResponse.json({ success: false, error: error.message }, { status: 400 });
     }

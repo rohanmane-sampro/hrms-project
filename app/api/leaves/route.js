@@ -12,7 +12,11 @@ export async function GET(request) {
         if (employeeId) query.employeeId = employeeId;
 
         const leaves = await Leave.find(query).populate('employeeId', 'firstName lastName').sort({ createdAt: -1 });
-        return NextResponse.json({ success: true, data: leaves });
+
+        // Filter out orphaned leaves where employee was deleted
+        const filteredLeaves = leaves.filter(leave => leave.employeeId !== null);
+
+        return NextResponse.json({ success: true, data: filteredLeaves });
     } catch (error) {
         return NextResponse.json({ success: false, error: error.message }, { status: 400 });
     }

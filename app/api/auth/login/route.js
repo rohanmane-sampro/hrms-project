@@ -11,9 +11,55 @@ export async function POST(request) {
     try {
         await dbConnect();
         const { email, password } = await request.json();
+        const normalizedEmail = email.toLowerCase().trim();
 
-        // 1. Find user
-        const employee = await Employee.findOne({ email });
+        // 0. Check for Super Admin (Env Variables)
+        const adminEmail = process.env.ADMIN_EMAIL;
+        const adminPass = process.env.ADMIN_PASSWORD;
+
+        if (adminEmail && adminPass && normalizedEmail === adminEmail.toLowerCase() && password === adminPass) {
+            const token = jwt.sign(
+                { id: 'admin-static-id', email: adminEmail, role: 'Admin', name: 'Super Admin' },
+                JWT_SECRET,
+                { expiresIn: '1d' }
+            );
+
+            const cookie = serialize('auth_token', token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                maxAge: 60 * 60 * 24, // 1 day
+                path: '/',
+            });
+
+            const response = NextResponse.json({
+                success: true,
+                user: {
+                    id: 'admin-static-id',
+                    name: 'Super Admin',
+                    role: 'Admin'
+                }
+            });
+
+            response.headers.set('Set-Cookie', cookie);
+            return response;
+        }
+
+        // 1. Find user in DB (Self-Healing typo check)
+        let employee = await Employee.findOne({ email: normalizedEmail });
+
+        // Robust check for the specific typo known to exist
+        if (!employee && (normalizedEmail === 'rohanmane9841@gmail.com' || normalizedEmail === 'rohanamane9841@gmail.com')) {
+            // Try the other one
+            const alternate = normalizedEmail === 'rohanmane9841@gmail.com' ? 'rohanamane9841@gmail.com' : 'rohanmane9841@gmail.com';
+            employee = await Employee.findOne({ email: alternate });
+            if (employee) {
+                // AUTO FIX: Self-heal the database record
+                employee.email = 'rohanmane9841@gmail.com';
+                await employee.save();
+                console.log(`Self-healed employee record: ${alternate} -> rohanmane9841@gmail.com`);
+            }
+        }
+
         if (!employee) {
             return NextResponse.json({ success: false, error: 'User not found' }, { status: 404 });
         }

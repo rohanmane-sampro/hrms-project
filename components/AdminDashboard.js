@@ -9,68 +9,107 @@ export default function AdminDashboard({ user }) {
         newJoinees: 0,
         departmentStats: []
     });
+    const [activities, setActivities] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        async function fetchStats() {
+        async function fetchData() {
             try {
-                const res = await fetch('/api/stats');
-                const data = await res.json();
-                if (data.success) {
-                    setStats(data.data);
+                // Fetch stats and recent leaves for "activity"
+                const [statsRes, leavesRes] = await Promise.all([
+                    fetch('/api/stats'),
+                    fetch('/api/leaves')
+                ]);
+
+                const statsData = await statsRes.json();
+                const leavesData = await leavesRes.json();
+
+                if (statsData.success) {
+                    setStats(statsData.data);
+                }
+
+                if (leavesData.success) {
+                    // Map leaves to activity feed items
+                    const recentLeaves = leavesData.data.slice(0, 5).map(l => ({
+                        id: l._id,
+                        text: `${l.employeeId?.name || 'Employee'} requested ${l.type} leave`,
+                        status: l.status,
+                        time: new Date(l.createdAt).toLocaleDateString(),
+                        type: 'leave'
+                    }));
+                    setActivities(recentLeaves);
                 }
             } catch (error) {
-                console.error("Failed to fetch stats");
+                console.error("Failed to fetch dashboard data");
             } finally {
                 setLoading(false);
             }
         }
-        fetchStats();
+        fetchData();
     }, []);
 
-    if (loading) return <div style={{ textAlign: 'center', padding: '10rem' }}><h2>Syncing Workspace...</h2></div>;
+    if (loading) return (
+        <div className="flex h-96 items-center justify-center">
+            <h2 className="text-2xl font-black animate-pulse opacity-50 uppercase tracking-[0.3em] text-white">Loading Dashboard...</h2>
+        </div>
+    );
 
     return (
-        <div className="animate-fade">
-            <div className="flex justify-between items-center" style={{ marginBottom: '4rem' }}>
+        <div className="flex flex-col gap-12 animate-fade-in">
+            <header className="flex justify-between items-end">
                 <div>
-                    <h1>Workforce Overview</h1>
-                    <p>Real-time insights into your global team operations</p>
+                    <h3 className="text-indigo-400">Admin Dashboard</h3>
+                    <h1 className="text-7xl font-black text-white">System Overview</h1>
+                    <p className="max-w-md">View company statistics, employee attendance, and recent updates at a glance.</p>
                 </div>
                 <div className="flex gap-4">
-                    <button className="btn-outline" onClick={async () => {
-                        await fetch('/api/auth/logout', { method: 'POST' });
-                        window.location.href = '/login';
-                    }}>Sign Out</button>
-                    <a href="/employees" className="btn-premium" style={{ textDecoration: 'none' }}>+ Onboard Employee</a>
+                    <a href="/employees" className="btn-action btn-primary">+ Add New Employee</a>
                 </div>
-            </div>
+            </header>
 
-            <div className="grid grid-4" style={{ marginBottom: '4rem' }}>
-                <StatCard title="Total Employees" value={stats.totalEmployees} icon="👥" color="#4f46e5" />
-                <StatCard title="Present Now" value={stats.present} icon="✅" color="#10b981" />
-                <StatCard title="On Leave" value={stats.leaves} icon="🗓️" color="#f59e0b" />
-                <StatCard title="Monthly Growth" value={stats.newJoinees} icon="📈" color="#6366f1" />
-            </div>
-
-            <div className="grid grid-2">
-                <div className="glass-card">
-                    <div className="flex justify-between items-center" style={{ marginBottom: '2rem' }}>
-                        <h3>Recent Activity</h3>
-                        <span style={{ fontSize: '0.8rem', color: 'var(--text-dim)' }}>Live Updates</span>
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                        <ActivityLine text="System security check complete" status="Successful" time="12m ago" />
-                        <ActivityLine text="Safety protocols distributed" status="Active" time="45m ago" />
-                        <ActivityLine text="Cloud infrastructure scaled" status="Successful" time="2h ago" />
-                        <ActivityLine text="New department 'Cloud Ops' initialized" status="Successful" time="3h ago" />
-                    </div>
+            {/* Stats Grid */}
+            <div className="grid grid-cols-12 gap-8 auto-rows-[280px]">
+                {/* Main Stats */}
+                <div className="col-span-12 lg:col-span-3">
+                    <StatCard title="Total Employees" value={stats.totalEmployees} icon="👥" color="indigo" />
+                </div>
+                <div className="col-span-12 lg:col-span-3">
+                    <StatCard title="Total Present" value={stats.present} icon="✅" color="emerald" />
+                </div>
+                <div className="col-span-12 lg:col-span-3">
+                    <StatCard title="Employees on Leave" value={stats.leaves} icon="🗓️" color="amber" />
+                </div>
+                <div className="col-span-12 lg:col-span-3">
+                    <StatCard title="Recent Hires" value={`+${stats.newJoinees}`} icon="📈" color="cyan" />
                 </div>
 
-                <div className="glass-card">
-                    <h3 style={{ marginBottom: '2rem' }}>Department Statistics</h3>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-                        {stats.departmentStats.length === 0 ? <p>No data recorded yet.</p> : (
+                {/* Real-time Activity Feed */}
+                <div className="col-span-12 lg:col-span-7 row-span-2 bento-card">
+                    <div className="flex justify-between items-center mb-10">
+                        <h2 className="text-2xl font-black mb-0 uppercase tracking-tighter text-white">Recent Requests</h2>
+                        <span className="badge-premium bg-indigo-500/20 text-indigo-400 border border-indigo-500/20">Live Sync</span>
+                    </div>
+                    <div className="flex flex-col gap-4">
+                        {activities.length === 0 ? (
+                            <p className="opacity-30 font-black tracking-widest text-center py-12 uppercase italic text-white">No recent requests...</p>
+                        ) : (
+                            activities.map(activity => (
+                                <ActivityLine
+                                    key={activity.id}
+                                    text={activity.text}
+                                    status={activity.status}
+                                    time={activity.time}
+                                />
+                            ))
+                        )}
+                    </div>
+                </div>
+
+                {/* Dept Stats */}
+                <div className="col-span-12 lg:col-span-5 row-span-2 bento-card bg-indigo-600/5">
+                    <h2 className="text-2xl font-black mb-10 uppercase tracking-tighter text-white">Department Distribution</h2>
+                    <div className="flex flex-col gap-10">
+                        {stats.departmentStats.length === 0 ? <p className="opacity-50 font-black tracking-widest text-center py-12 uppercase italic text-white">No data available...</p> : (
                             stats.departmentStats.map(dept => (
                                 <DeptBar
                                     key={dept.name}
@@ -88,55 +127,59 @@ export default function AdminDashboard({ user }) {
 }
 
 function StatCard({ title, value, icon, color }) {
+    const colors = {
+        indigo: 'from-indigo-600/20 to-indigo-900/10 border-indigo-500/20 text-indigo-400',
+        emerald: 'from-emerald-600/20 to-emerald-900/10 border-emerald-500/20 text-emerald-400',
+        amber: 'from-amber-600/20 to-amber-900/10 border-amber-500/20 text-amber-500',
+        cyan: 'from-cyan-600/20 to-cyan-900/10 border-cyan-500/20 text-cyan-400'
+    };
+
     return (
-        <div className="glass-card flex items-center gap-6" style={{ padding: '2rem' }}>
-            <div style={{
-                width: '56px',
-                height: '56px',
-                borderRadius: '12px',
-                background: `${color}15`,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '1.5rem',
-                color: color
-            }}>
-                {icon}
-            </div>
+        <div className={`bento-card h-full flex flex-col justify-between bg-gradient-to-br ${colors[color]}`}>
+            <div className="text-4xl filter drop-shadow-md">{icon}</div>
             <div>
-                <h2 style={{ marginBottom: '0', fontSize: '1.75rem', fontWeight: '700' }}>{value}</h2>
-                <p style={{ fontSize: '0.85rem', fontWeight: '500' }}>{title}</p>
+                <h1 className="text-7xl font-black mb-1 p-0 leading-none tracking-tighter text-white">{value}</h1>
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-60 m-0 leading-none">{title}</p>
             </div>
         </div>
     );
 }
 
 function ActivityLine({ text, status, time }) {
+    const statusColors = {
+        'Approved': 'bg-emerald-600/20 text-emerald-400',
+        'Pending': 'bg-amber-600/20 text-amber-500',
+        'Rejected': 'bg-red-600/20 text-red-500'
+    };
+
     return (
-        <div className="flex justify-between items-center" style={{ paddingBottom: '1.2rem', borderBottom: '1px solid var(--border)' }}>
-            <div>
-                <p style={{ fontWeight: '500', fontSize: '0.95rem', color: 'var(--text-main)' }}>{text}</p>
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-dim)' }}>{time}</span>
+        <div className="flex justify-between items-center p-6 glass-panel hover:bg-white/5 transition-all group cursor-pointer border-white/5">
+            <div className="flex items-center gap-6">
+                <div className="w-2.5 h-2.5 rounded-full bg-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.5)] animate-pulse"></div>
+                <div>
+                    <p className="font-black text-sm uppercase tracking-tight text-white group-hover:text-indigo-400 transition-colors leading-none mb-1">{text}</p>
+                    <span className="text-[10px] uppercase tracking-widest text-gray-500 font-black opacity-50">{time}</span>
+                </div>
             </div>
-            <span className={`badge ${status === 'Successful' ? 'badge-success' : 'badge-danger'}`}>{status}</span>
+            <span className={`badge-premium ${statusColors[status] || 'bg-indigo-600/20 text-indigo-400'}`}>
+                {status?.toUpperCase() || 'INFO'}
+            </span>
         </div>
     );
 }
 
 function DeptBar({ name, count, percent }) {
     return (
-        <div>
-            <div className="flex justify-between" style={{ marginBottom: '0.75rem' }}>
-                <span style={{ fontWeight: '600', fontSize: '0.9rem' }}>{name}</span>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-dim)' }}>{count} experts</span>
+        <div className="group">
+            <div className="flex justify-between items-center mb-4">
+                <span className="font-black uppercase tracking-[0.2em] text-[11px] text-white group-hover:text-indigo-400 transition-all">{name}</span>
+                <span className="text-[10px] font-black text-indigo-400 p-1 px-3 bg-indigo-500/10 rounded-lg">{count} EMPLOYEES</span>
             </div>
-            <div style={{ width: '100%', height: '6px', background: 'rgba(255,255,255,0.03)', borderRadius: '50px', overflow: 'hidden' }}>
-                <div style={{
-                    width: percent,
-                    height: '100%',
-                    background: 'var(--primary)',
-                    borderRadius: '50px'
-                }}></div>
+            <div className="w-full h-4 bg-white/5 rounded-full overflow-hidden border border-white/5 p-0.5">
+                <div
+                    className="h-full bg-gradient-to-r from-indigo-600 to-cyan-500 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(99,102,241,0.3)]"
+                    style={{ width: percent }}
+                ></div>
             </div>
         </div>
     );

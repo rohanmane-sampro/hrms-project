@@ -6,6 +6,7 @@ export default function EmployeeDashboard() {
     const router = useRouter();
     const [user, setUser] = useState(null);
     const [attendance, setAttendance] = useState([]);
+    const [announcements, setAnnouncements] = useState([]);
     const [leaves, setLeaves] = useState([]);
     const [marking, setMarking] = useState(false);
     const [showLeaveModal, setShowLeaveModal] = useState(false);
@@ -18,7 +19,14 @@ export default function EmployeeDashboard() {
 
     useEffect(() => {
         fetchMe();
+        fetchAnnouncements();
     }, []);
+
+    async function fetchAnnouncements() {
+        const res = await fetch('/api/announcements');
+        const data = await res.json();
+        if (data.success) setAnnouncements(data.data.slice(0, 3)); // Show top 3
+    }
 
     async function fetchMe() {
         const res = await fetch('/api/auth/me');
@@ -70,128 +78,195 @@ export default function EmployeeDashboard() {
         });
         const data = await res.json();
         if (data.success) {
-            alert('Leave request submitted!');
             setShowLeaveModal(false);
             fetchLeaves(user.id);
         }
     }
 
-    if (!user) return <div style={{ textAlign: 'center', padding: '10rem' }}><h2>Synchronizing Portal...</h2></div>;
+    if (!user) return (
+        <div className="flex h-96 items-center justify-center">
+            <h2 className="text-2xl font-black animate-pulse opacity-50 uppercase tracking-[0.3em] text-white">Loading Portal...</h2>
+        </div>
+    );
 
     const todayMarked = attendance.some(a => new Date(a.date).toDateString() === new Date().toDateString());
 
     return (
-        <div className="animate-fade">
+        <div className="flex flex-col gap-12 animate-fade-in pb-24">
             {/* Header */}
-            <div className="flex justify-between items-end" style={{ marginBottom: '3rem' }}>
+            <header className="flex justify-between items-end">
                 <div>
-                    <span style={{ color: 'var(--primary)', fontWeight: '600', textTransform: 'uppercase', fontSize: '0.8rem', letterSpacing: '2px' }}>Member Access</span>
-                    <h1>Welcome, {user.name}</h1>
-                    <p style={{ color: 'var(--text-muted)' }}>{user.role} | {user.email}</p>
+                    <h3 className="text-indigo-400">Employee Portal</h3>
+                    <h1 className="text-6xl font-black text-white">Welcome, {user.name.split(' ')[0]}</h1>
+                    <p className="max-w-md font-medium text-gray-500 uppercase tracking-widest text-[10px]">{user.role} | {user.email}</p>
                 </div>
-                <div className="glass-card" style={{ padding: '0.8rem 1.5rem', borderRadius: '50px' }}>
-                    <span style={{ color: 'var(--success)' }}>●</span> System Active
+                <div className="badge-premium bg-indigo-600/10 text-indigo-400 border border-indigo-600/20 flex items-center gap-4 px-8 py-5">
+                    <div className="w-2 h-2 rounded-full bg-indigo-500 shadow-[0_0_12px_rgba(99,102,241,0.8)] animate-pulse"></div>
+                    SECURE LOGIN
                 </div>
-            </div>
+            </header>
 
-            <div className="grid grid-2">
-                {/* Quick Actions */}
-                <div className="glass-card">
-                    <h3 style={{ marginBottom: '1.5rem' }}>Daily Presence</h3>
-                    <div style={{ padding: '2rem', textAlign: 'center', background: 'rgba(255,255,255,0.02)', borderRadius: '1rem', border: '1px solid var(--border)' }}>
-                        <h2 style={{ marginBottom: '1rem' }}>{new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</h2>
-                        <p style={{ marginBottom: '2rem', color: 'var(--text-muted)' }}>{new Date().toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'short' })}</p>
+            {/* Announcements Banner */}
+            {announcements.length > 0 && (
+                <div className="flex flex-col gap-6">
+                    <h2 className="text-2xl font-black mb-2 flex items-center gap-4 text-white">
+                        <div className="w-2 h-8 bg-indigo-600 rounded-full"></div>
+                        COMPANY ANNOUNCEMENTS
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {announcements.map(a => (
+                            <div key={a._id} className="bento-card border-indigo-600/10 p-8 hover:scale-[1.02] transition-transform">
+                                <span className={`badge-premium text-[10px] ${a.type === 'Alert' ? 'bg-red-600/20 text-red-500' : 'bg-indigo-600/20 text-indigo-400'}`}>[{a.type.toUpperCase()}]</span>
+                                <h4 className="text-xl font-black mt-6 mb-3 uppercase tracking-tight leading-tight text-white">{a.title}</h4>
+                                <p className="text-sm font-medium line-clamp-2 opacity-60 mb-6 leading-relaxed">{a.content}</p>
+                                <div className="pt-6 border-t border-white/5 flex justify-between items-center">
+                                    <span className="text-[10px] font-black uppercase text-gray-500 tracking-widest">{new Date(a.createdAt).toLocaleDateString()}</span>
+                                    <span className="text-indigo-400 text-xs font-black uppercase tracking-widest cursor-pointer hover:underline underline-offset-4">Read More →</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
 
+            <div className="grid grid-cols-12 gap-8">
+                {/* Daily Marking Card */}
+                <div className="col-span-12 lg:col-span-4 bento-card bg-indigo-600/5 border-indigo-600/20 flex flex-col items-center justify-center py-16 text-center group relative overflow-hidden">
+                    <div className="absolute top-[-20%] right-[-20%] w-64 h-64 bg-indigo-600/10 blur-[80px] rounded-full"></div>
+                    <h3 className="text-indigo-400 mb-2 relative">ATTENDANCE</h3>
+                    <h1 className="text-8xl font-black mb-1 p-0 leading-none group-hover:scale-105 transition-transform duration-700 relative text-white">
+                        {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </h1>
+                    <p className="text-sm font-black uppercase tracking-[0.4em] text-gray-500 mb-12 relative">
+                        {new Date().toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'short' })}
+                    </p>
+
+                    <div className="w-full max-w-xs flex flex-col gap-4 relative">
                         {todayMarked ? (
-                            <div className="badge badge-success" style={{ padding: '1rem 2rem', fontSize: '1rem' }}>
-                                ✓ Check-in Complete
+                            <div className="badge-premium bg-emerald-600/20 text-emerald-400 border border-emerald-600/30 px-12 py-5 rounded-3xl flex items-center justify-center gap-3 font-black tracking-widest">
+                                <span className="text-2xl">✓</span> ATTENDANCE MARKED
                             </div>
                         ) : (
-                            <button onClick={() => markAttendance('Present')} disabled={marking} className="btn-premium" style={{ width: '100%', justifyContent: 'center' }}>
-                                {marking ? 'Signing in...' : 'Register Attendance'}
+                            <button onClick={() => markAttendance('Present')} disabled={marking} className="btn-action btn-primary w-full py-6 shadow-glow">
+                                {marking ? 'MARKING...' : 'MARK ATTENDANCE'}
                             </button>
                         )}
+
+                        <button
+                            onClick={() => setShowLeaveModal(true)}
+                            className="btn-action btn-ghost w-full py-6 font-black tracking-widest text-white"
+                        >
+                            REQUEST LEAVE
+                        </button>
                     </div>
-                    <button
-                        onClick={() => setShowLeaveModal(true)}
-                        className="btn-outline"
-                        style={{ width: '100%', marginTop: '1.5rem', justifyContent: 'center' }}
-                    >
-                        Request Time Off
-                    </button>
                 </div>
 
-                {/* Leave Status */}
-                <div className="glass-card">
-                    <h3 style={{ marginBottom: '1.5rem' }}>Leave Management</h3>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                        {leaves.length === 0 ? (
-                            <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '2rem' }}>No recent leave requests.</p>
-                        ) : (
-                            leaves.map(l => (
-                                <div key={l._id} className="flex justify-between items-center" style={{ padding: '1rem', background: 'rgba(255,255,255,0.03)', borderRadius: '1rem' }}>
-                                    <div>
-                                        <p style={{ fontWeight: '600' }}>{l.type} Holiday</p>
-                                        <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{new Date(l.startDate).toLocaleDateString()} - {new Date(l.endDate).toLocaleDateString()}</span>
-                                    </div>
-                                    <span className={`badge ${l.status === 'Approved' ? 'badge-success' : 'badge-danger'}`} style={{ background: l.status === 'Pending' ? 'rgba(245, 158, 11, 0.1)' : '', color: l.status === 'Pending' ? 'var(--warning)' : '' }}>
-                                        {l.status}
-                                    </span>
+                {/* Leave Status & History */}
+                <div className="col-span-12 lg:col-span-8 flex flex-col gap-8">
+                    <div className="bento-card flex-1">
+                        <div className="flex justify-between items-center mb-10">
+                            <h2 className="text-2xl font-black mb-0 text-white">LEAVE STATUS</h2>
+                            <a href="/employee-dashboard/leaves" className="text-[10px] font-black uppercase text-indigo-400 tracking-widest hover:underline">View All Requests →</a>
+                        </div>
+                        <div className="flex flex-col gap-6">
+                            {leaves.length === 0 ? (
+                                <div className="border border-dashed border-white/10 rounded-3xl p-16 text-center">
+                                    <p className="opacity-30 font-black tracking-[0.3em] uppercase italic text-sm text-white">No leave requests found</p>
                                 </div>
-                            ))
-                        )}
+                            ) : (
+                                leaves.slice(0, 2).map(l => (
+                                    <div key={l._id} className="flex justify-between items-center p-8 glass-panel hover:bg-white/5 transition-all group">
+                                        <div className="flex items-center gap-8">
+                                            <div className="w-16 h-16 rounded-[1.5rem] bg-indigo-600/20 flex items-center justify-center font-black text-2xl text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                                                {l.type[0].toUpperCase()}
+                                            </div>
+                                            <div>
+                                                <p className="text-xl font-black uppercase tracking-tighter text-white">{l.type} LEAVE</p>
+                                                <span className="text-[10px] font-black text-gray-500 tracking-[0.2em] uppercase">{new Date(l.startDate).toLocaleDateString()} <span className="text-indigo-400">→</span> {new Date(l.endDate).toLocaleDateString()}</span>
+                                            </div>
+                                        </div>
+                                        <span className={`badge-premium px-8 py-3 rounded-2xl ${l.status === 'Approved' ? 'bg-emerald-600/20 text-emerald-400 border-emerald-600/20' : l.status === 'Pending' ? 'bg-amber-600/20 text-amber-500 border-amber-600/20' : 'bg-red-600/20 text-red-400 border-red-600/20'}`}>
+                                            {l.status.toUpperCase()}
+                                        </span>
+                                    </div>
+                                ))
+                            )}
+                        </div>
                     </div>
-                </div>
 
-                {/* History */}
-                <div className="glass-card" style={{ gridColumn: '1 / -1' }}>
-                    <h3 style={{ marginBottom: '1.5rem' }}>Recent Activity Logs</h3>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                        <thead>
-                            <tr style={{ background: 'rgba(255,255,255,0.02)' }}>
-                                <th style={{ padding: '1.2rem', color: 'var(--text-muted)' }}>Date</th>
-                                <th style={{ padding: '1.2rem', color: 'var(--text-muted)' }}>Status</th>
-                                <th style={{ padding: '1.2rem', color: 'var(--text-muted)' }}>Recorded At</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {attendance.map(a => (
-                                <tr key={a._id} style={{ borderBottom: '1px solid var(--border)' }}>
-                                    <td style={{ padding: '1.2rem' }}>{new Date(a.date).toLocaleDateString()}</td>
-                                    <td style={{ padding: '1.2rem' }}><span className={`badge ${a.status === 'Present' ? 'badge-success' : 'badge-danger'}`}>{a.status}</span></td>
-                                    <td style={{ padding: '1.2rem' }}>{a.checkIn ? new Date(a.checkIn).toLocaleTimeString() : '-'}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                    {/* Attendance History */}
+                    <div className="bento-card overflow-hidden p-0 bg-black/40">
+                        <div className="px-8 pt-8 pb-4 border-b border-white/5">
+                            <h2 className="text-xl font-black mb-0 uppercase text-white">Recent Attendance Logs</h2>
+                        </div>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left border-collapse">
+                                <thead>
+                                    <tr className="bg-white/5 text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400">
+                                        <th className="p-6">DATE</th>
+                                        <th className="p-6">STATUS</th>
+                                        <th className="p-6">CHECK-IN TIME</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {attendance.map(a => (
+                                        <tr key={a._id} className="border-b border-white/5 hover:bg-white/5 transition-all group">
+                                            <td className="p-6 text-sm font-black text-white">{new Date(a.date).toLocaleDateString('en-US', { day: '2-digit', month: 'short' })}</td>
+                                            <td className="p-6">
+                                                <span className={`badge-premium text-[10px] ${a.status === 'Present' ? 'text-emerald-400' : 'text-amber-500'}`}>
+                                                    {a.status.toUpperCase()}
+                                                </span>
+                                            </td>
+                                            <td className="p-6 text-[10px] font-mono text-indigo-400 opacity-60">
+                                                {a.checkIn ? new Date(a.checkIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '---'}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             {/* Leave Modal */}
             {showLeaveModal && (
-                <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, backdropFilter: 'blur(10px)' }}>
-                    <div className="glass-card animate-fade" style={{ width: '500px' }}>
-                        <h2 style={{ marginBottom: '2rem' }}>Apply for Leave</h2>
-                        <form onSubmit={submitLeave} className="flex flex-col gap-5">
-                            <select className="input-premium" value={leaveForm.type} onChange={e => setLeaveForm({ ...leaveForm, type: e.target.value })}>
-                                <option>Annual</option>
-                                <option>Sick</option>
-                                <option>Unpaid</option>
-                            </select>
-                            <div className="grid grid-2">
-                                <div>
-                                    <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Start Date</label>
-                                    <input type="date" className="input-premium" required onChange={e => setLeaveForm({ ...leaveForm, startDate: e.target.value })} />
+                <div className="fixed inset-0 bg-black/90 backdrop-blur-3xl z-[99999] flex items-center justify-center p-8 animate-fade-in">
+                    <div className="bento-card w-full max-w-xl border-white/10 ring-1 ring-white/10 shadow-2xl p-12">
+                        <div className="flex justify-between items-start mb-16">
+                            <div>
+                                <h3 className="text-indigo-400 mb-1">Leave Request</h3>
+                                <h1 className="text-5xl font-black mb-0 text-white">Request Time Off</h1>
+                            </div>
+                            <button onClick={() => setShowLeaveModal(false)} className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center hover:bg-red-600 hover:text-white transition-all text-xl border border-white/10 text-white">✕</button>
+                        </div>
+
+                        <form onSubmit={submitLeave} className="flex flex-col gap-8">
+                            <div className="flex flex-col gap-3">
+                                <label className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 px-6">Leave Type</label>
+                                <select className="glass-input py-6 text-xl text-white" value={leaveForm.type} onChange={e => setLeaveForm({ ...leaveForm, type: e.target.value })}>
+                                    <option className="bg-black">Annual</option>
+                                    <option className="bg-black">Sick</option>
+                                    <option className="bg-black">Unpaid</option>
+                                </select>
+                            </div>
+                            <div className="grid grid-cols-2 gap-8">
+                                <div className="flex flex-col gap-3">
+                                    <label className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 px-6">Start Date</label>
+                                    <input type="date" className="glass-input py-6 text-white" required onChange={e => setLeaveForm({ ...leaveForm, startDate: e.target.value })} />
                                 </div>
-                                <div>
-                                    <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>End Date</label>
-                                    <input type="date" className="input-premium" required onChange={e => setLeaveForm({ ...leaveForm, endDate: e.target.value })} />
+                                <div className="flex flex-col gap-3">
+                                    <label className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 px-6">End Date</label>
+                                    <input type="date" className="glass-input py-6 text-white" required onChange={e => setLeaveForm({ ...leaveForm, endDate: e.target.value })} />
                                 </div>
                             </div>
-                            <textarea className="input-premium" placeholder="Reason for leave" style={{ minHeight: '100px' }} onChange={e => setLeaveForm({ ...leaveForm, reason: e.target.value })}></textarea>
-                            <div className="flex gap-4">
-                                <button type="button" onClick={() => setShowLeaveModal(false)} className="btn-outline" style={{ flex: 1 }}>Cancel</button>
-                                <button type="submit" className="btn-premium" style={{ flex: 1, justifyContent: 'center' }}>Submit Request</button>
+                            <div className="flex flex-col gap-3">
+                                <label className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 px-6">Reason for Leave</label>
+                                <textarea className="glass-input p-6 text-sm text-white" placeholder="Provide a reason for your leave request..." style={{ minHeight: '140px' }} onChange={e => setLeaveForm({ ...leaveForm, reason: e.target.value })}></textarea>
+                            </div>
+                            <div className="flex gap-6 pt-12 mt-4 border-t border-white/10">
+                                <button type="button" onClick={() => setShowLeaveModal(false)} className="btn-action btn-ghost flex-1 py-6 font-black uppercase tracking-widest text-white">Cancel</button>
+                                <button type="submit" className="btn-action btn-primary flex-[2] py-6 font-black uppercase tracking-widest shadow-glow">Submit Leave</button>
                             </div>
                         </form>
                     </div>
