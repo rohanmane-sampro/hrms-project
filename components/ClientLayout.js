@@ -8,7 +8,7 @@ export default function ClientLayout({ children }) {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    const isAuthPage = pathname === '/login' || pathname === '/register';
+    const isAuthPage = pathname === '/login';
 
     useEffect(() => {
         if (!isAuthPage) {

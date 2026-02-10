@@ -102,7 +102,7 @@ export default function LoginPage() {
 
                 <div className="mt-12 pt-8 border-t border-white/5 text-center">
                     <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">
-                        New Admin? <a href="/register" className="text-indigo-400 hover:text-white transition-all ml-2">Register Here</a>
+                        Secure Access Only
                     </p>
                 </div>
             </div>
