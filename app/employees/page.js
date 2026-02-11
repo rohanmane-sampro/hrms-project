@@ -5,6 +5,7 @@ export default function EmployeesPage() {
     const [employees, setEmployees] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
+    const [step, setStep] = useState(1);
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -69,10 +70,11 @@ export default function EmployeesPage() {
             position: '', salary: ''
         });
         setEditingEmployee(null);
+        setStep(1);
     };
 
     async function handleSubmit(e) {
-        e.preventDefault();
+        if (e) e.preventDefault();
 
         // Basic Validation
         if (!formData.email.includes('@')) {
@@ -118,6 +120,7 @@ export default function EmployeesPage() {
             position: emp.position || '',
             salary: emp.salary || '',
         });
+        setStep(1);
         setShowModal(true);
     }
 
@@ -127,13 +130,22 @@ export default function EmployeesPage() {
         fetchEmployees();
     }
 
+    const handleNext = () => {
+        // Simple validation for step 1
+        if (!formData.firstName || !formData.lastName || !formData.email) {
+            alert('Please fill in the required fields (First Name, Last Name, Email)');
+            return;
+        }
+        setStep(2);
+    };
+
     return (
-        <div className="flex flex-col gap-12">
+        <div className="flex flex-col gap-8 animate-fade-in">
             <header className="flex justify-between items-end">
                 <div>
-                    <h3 className="text-indigo-400">Employee Management</h3>
-                    <h1 className="text-white">Staff Directory</h1>
-                    <p className="max-w-md">View and manage all employee records and departmental assignments.</p>
+                    <h3 className="text-gray-500 text-sm font-semibold uppercase tracking-wider mb-1">Employee Management</h3>
+                    <h1 className="text-3xl font-bold text-gray-900">Staff Directory</h1>
+                    <p className="text-gray-600 max-w-md">View and manage all employee records and departmental assignments.</p>
                 </div>
                 <button className="btn-action btn-primary" onClick={() => {
                     resetForm();
@@ -141,48 +153,48 @@ export default function EmployeesPage() {
                 }}>+ Add New Employee</button>
             </header>
 
-            <div className="bento-card overflow-hidden p-0 border-white/5 bg-black/20">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="bg-white/5 border-b border-white/10">
-                                <th className="p-6 text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400">Employee</th>
-                                <th className="p-6 text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400">Role & Dept</th>
-                                <th className="p-6 text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400">Contact</th>
-                                <th className="p-6 text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400 text-right">Actions</th>
+                            <tr className="bg-gray-50 border-b border-gray-200">
+                                <th className="p-6 text-xs font-semibold uppercase tracking-wider text-gray-500">Employee</th>
+                                <th className="p-6 text-xs font-semibold uppercase tracking-wider text-gray-500">Role & Dept</th>
+                                <th className="p-6 text-xs font-semibold uppercase tracking-wider text-gray-500">Contact</th>
+                                <th className="p-6 text-xs font-semibold uppercase tracking-wider text-gray-500 text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {loading ? (
-                                <tr><td colSpan="4" className="p-24 text-center text-xl font-black opacity-30 tracking-widest animate-pulse text-white">LOADING DATA...</td></tr>
+                                <tr><td colSpan="4" className="p-12 text-center text-lg font-medium text-gray-400 animate-pulse">Loading data...</td></tr>
                             ) : employees.length === 0 ? (
-                                <tr><td colSpan="4" className="p-24 text-center text-xl font-black opacity-30 tracking-widest text-white">NO EMPLOYEES FOUND</td></tr>
+                                <tr><td colSpan="4" className="p-12 text-center text-lg font-medium text-gray-400">No employees found.</td></tr>
                             ) : (
                                 employees.filter(emp => emp.role !== 'Admin').map((emp) => (
-                                    <tr key={emp._id} className="border-b border-white/5 hover:bg-white/5 transition-all group">
+                                    <tr key={emp._id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors group">
                                         <td className="p-6">
-                                            <div className="flex items-center gap-6">
-                                                <div className="w-14 h-14 rounded-2xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center font-black text-xl shadow-inner border border-indigo-600/30">
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-lg">
                                                     {emp.firstName[0]}
                                                 </div>
                                                 <div>
-                                                    <p className="font-black text-white text-lg leading-none mb-1 uppercase tracking-tight">{emp.firstName} {emp.lastName}</p>
-                                                    <p className="text-xs font-bold text-gray-500 tracking-wider lowercase font-mono">{emp.email}</p>
+                                                    <p className="font-semibold text-gray-900 text-base leading-tight mb-0.5">{emp.firstName} {emp.lastName}</p>
+                                                    <p className="text-xs text-gray-500 font-medium lowercase font-mono">{emp.email}</p>
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="p-6">
-                                            <p className="font-black text-white text-sm uppercase tracking-widest mb-1">{emp.position}</p>
-                                            <span className="badge-premium bg-indigo-600/10 text-indigo-400 border border-indigo-600/20">{emp.department}</span>
+                                            <p className="font-semibold text-gray-800 text-sm mb-1">{emp.position}</p>
+                                            <span className="inline-block px-2 py-0.5 rounded text-xs font-semibold bg-indigo-50 text-indigo-600 border border-indigo-100">{emp.department}</span>
                                         </td>
                                         <td className="p-6">
-                                            <p className="text-sm font-bold text-gray-300 mb-1">{emp.phone || 'N/A'}</p>
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">{emp.gender || 'N/A'}</span>
+                                            <p className="text-sm font-medium text-gray-700 mb-1">{emp.phone || 'N/A'}</p>
+                                            <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">{emp.gender || 'N/A'}</span>
                                         </td>
                                         <td className="p-6 text-right">
-                                            <div className="flex gap-3 justify-end opacity-0 group-hover:opacity-100 transition-all scale-95 group-hover:scale-100">
-                                                <button onClick={() => handleEdit(emp)} className="btn-action bg-indigo-600/10 text-indigo-400 hover:bg-indigo-600 hover:text-white px-4 py-2 rounded-xl text-xs">EDIT</button>
-                                                <button onClick={() => deleteEmployee(emp._id)} className="btn-action bg-red-600/10 text-red-500 hover:bg-red-600 hover:text-white px-4 py-2 rounded-xl text-xs">DELETE</button>
+                                            <div className="flex gap-2 justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <button onClick={() => handleEdit(emp)} className="btn-action bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-indigo-600 px-3 py-1.5 rounded-lg text-xs shadow-sm">Edit</button>
+                                                <button onClick={() => deleteEmployee(emp._id)} className="btn-action bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-red-600 px-3 py-1.5 rounded-lg text-xs shadow-sm">Delete</button>
                                             </div>
                                         </td>
                                     </tr>
@@ -194,108 +206,113 @@ export default function EmployeesPage() {
             </div>
 
             {showModal && (
-                <div className="fixed inset-0 bg-black/90 backdrop-blur-3xl z-[99999] flex items-center justify-center p-8 animate-fade-in">
-                    <div className="bento-card w-full max-w-5xl max-h-[90vh] overflow-y-auto border-white/10 ring-1 ring-white/5 shadow-2xl shadow-indigo-600/10">
-                        <div className="flex justify-between items-start mb-12">
+                <div className="fixed inset-0 z-[99999] flex items-center justify-center px-4 pb-4 pt-24 animate-fade-in">
+                    <div className="bg-white rounded-2xl w-full max-w-xl max-h-[85vh] shadow-[0_0_50px_rgba(0,0,0,0.1)] border border-gray-100 flex flex-col relative overflow-hidden">
+                        <div className="bg-white border-b border-gray-100 p-6 flex justify-between items-center sticky top-0 z-10">
                             <div>
-                                <h3 className="text-indigo-400">Employee Details</h3>
-                                <h1 className="text-4xl mb-0 text-white">{editingEmployee ? 'Edit Profile' : 'New Employee'}</h1>
+                                <h3 className="text-indigo-600 text-xs font-bold uppercase tracking-wide">
+                                    Step {step} of 2: {step === 1 ? 'Personal Info' : 'Employment Details'}
+                                </h3>
+                                <h1 className="text-xl font-bold text-gray-900 mt-1">{editingEmployee ? 'Edit Profile' : 'New Employee'}</h1>
                             </div>
-                            <button onClick={() => setShowModal(false)} className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center hover:bg-red-600 hover:text-white transition-all text-white border border-white/10">✕</button>
+                            <button onClick={() => setShowModal(false)} className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center hover:bg-gray-100 transition-colors text-gray-400 text-lg">✕</button>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="flex flex-col gap-12">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                                {/* Personal Info Section */}
-                                <div className="flex flex-col gap-8">
-                                    <div className="flex items-center gap-4 mb-4">
-                                        <div className="w-1 h-8 bg-indigo-500 rounded-full"></div>
-                                        <h2 className="text-xl font-black mb-0 uppercase tracking-widest leading-none text-white">Personal Info</h2>
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="flex flex-col gap-2">
-                                            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 px-4">First Name</label>
-                                            <input required className="glass-input text-white" placeholder="John" value={formData.firstName} onChange={e => setFormData({ ...formData, firstName: e.target.value })} />
+                        <div className="p-6 overflow-y-auto custom-scrollbar">
+                            <form id="employeeForm" onSubmit={handleSubmit} className="flex flex-col gap-6">
+                                {step === 1 && (
+                                    <div className="flex flex-col gap-5 animate-slide-in">
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="flex flex-col gap-1.5">
+                                                <label className="text-xs font-bold uppercase tracking-wider text-gray-500 px-1">First Name</label>
+                                                <input required className="glass-input w-full" placeholder="John" value={formData.firstName} onChange={e => setFormData({ ...formData, firstName: e.target.value })} />
+                                            </div>
+                                            <div className="flex flex-col gap-1.5">
+                                                <label className="text-xs font-bold uppercase tracking-wider text-gray-500 px-1">Last Name</label>
+                                                <input required className="glass-input w-full" placeholder="Doe" value={formData.lastName} onChange={e => setFormData({ ...formData, lastName: e.target.value })} />
+                                            </div>
                                         </div>
-                                        <div className="flex flex-col gap-2">
-                                            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 px-4">Last Name</label>
-                                            <input required className="glass-input text-white" placeholder="Doe" value={formData.lastName} onChange={e => setFormData({ ...formData, lastName: e.target.value })} />
+                                        <div className="flex flex-col gap-1.5">
+                                            <label className="text-xs font-bold uppercase tracking-wider text-gray-500 px-1">Email Address</label>
+                                            <input required type="email" className="glass-input w-full" placeholder="email@company.com" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} />
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="flex flex-col gap-1.5">
+                                                <label className="text-xs font-bold uppercase tracking-wider text-gray-500 px-1">Phone Number</label>
+                                                <input className="glass-input w-full" placeholder="+1 234 567 890" value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} />
+                                            </div>
+                                            <div className="flex flex-col gap-1.5">
+                                                <label className="text-xs font-bold uppercase tracking-wider text-gray-500 px-1">Gender</label>
+                                                <select className="glass-input w-full" value={formData.gender} onChange={e => setFormData({ ...formData, gender: e.target.value })}>
+                                                    <option value="">Select Gender</option>
+                                                    <option value="Male">Male</option>
+                                                    <option value="Female">Female</option>
+                                                    <option value="Other">Other</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-col gap-1.5">
+                                            <label className="text-xs font-bold uppercase tracking-wider text-gray-500 px-1">Date of Birth</label>
+                                            <input type="date" className="glass-input w-full" value={formData.dob} onChange={e => setFormData({ ...formData, dob: e.target.value })} />
+                                        </div>
+                                        <div className="flex flex-col gap-1.5">
+                                            <label className="text-xs font-bold uppercase tracking-wider text-gray-500 px-1">Home Address</label>
+                                            <textarea className="glass-input w-full" placeholder="Full Address" style={{ minHeight: '80px', resize: 'vertical' }} value={formData.address} onChange={e => setFormData({ ...formData, address: e.target.value })} />
                                         </div>
                                     </div>
-                                    <div className="flex flex-col gap-2">
-                                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 px-4">Email Address</label>
-                                        <input required type="email" className="glass-input text-white" placeholder="email@company.com" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} />
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="flex flex-col gap-2">
-                                            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 px-4">Phone Number</label>
-                                            <input className="glass-input text-white" placeholder="+1 234 567 890" value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} />
-                                        </div>
-                                        <div className="flex flex-col gap-2">
-                                            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 px-4">Gender</label>
-                                            <select className="glass-input text-white" value={formData.gender} onChange={e => setFormData({ ...formData, gender: e.target.value })}>
-                                                <option value="" className="bg-black">Select Gender</option>
-                                                <option value="Male" className="bg-black">Male</option>
-                                                <option value="Female" className="bg-black">Female</option>
-                                                <option value="Other" className="bg-black">Other</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div className="flex flex-col gap-2">
-                                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 px-4">Date of Birth</label>
-                                        <input type="date" className="glass-input text-white" value={formData.dob} onChange={e => setFormData({ ...formData, dob: e.target.value })} />
-                                    </div>
-                                </div>
+                                )}
 
-                                {/* Professional & Emergency Section */}
-                                <div className="flex flex-col gap-8">
-                                    <div className="flex items-center gap-4 mb-4">
-                                        <div className="w-1 h-8 bg-cyan-400 rounded-full"></div>
-                                        <h2 className="text-xl font-black mb-0 uppercase tracking-widest leading-none text-white">Employment Details</h2>
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="flex flex-col gap-2">
-                                            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 px-4">Department</label>
-                                            <select required className="glass-input text-white" value={formData.department} onChange={e => setFormData({ ...formData, department: e.target.value })}>
-                                                <option value="" disabled className="bg-black">Select Department</option>
-                                                {departments.map(dept => (
-                                                    <option key={dept._id} value={dept.name} className="bg-black">{dept.name}</option>
-                                                ))}
-                                            </select>
+                                {step === 2 && (
+                                    <div className="flex flex-col gap-5 animate-slide-in">
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="flex flex-col gap-1.5">
+                                                <label className="text-xs font-bold uppercase tracking-wider text-gray-500 px-1">Department</label>
+                                                <select required className="glass-input w-full" value={formData.department} onChange={e => setFormData({ ...formData, department: e.target.value })}>
+                                                    <option value="" disabled>Select Department</option>
+                                                    {departments.map(dept => (
+                                                        <option key={dept._id} value={dept.name}>{dept.name}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                            <div className="flex flex-col gap-1.5">
+                                                <label className="text-xs font-bold uppercase tracking-wider text-gray-500 px-1">Job Title</label>
+                                                <input required className="glass-input w-full" placeholder="e.g. Senior Manager" value={formData.position} onChange={e => setFormData({ ...formData, position: e.target.value })} />
+                                            </div>
                                         </div>
-                                        <div className="flex flex-col gap-2">
-                                            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 px-4">Job Title</label>
-                                            <input required className="glass-input text-white" placeholder="e.g. Senior Manager" value={formData.position} onChange={e => setFormData({ ...formData, position: e.target.value })} />
+                                        <div className="flex flex-col gap-1.5">
+                                            <label className="text-xs font-bold uppercase tracking-wider text-gray-500 px-1">Salary (Annual)</label>
+                                            <input required type="number" className="glass-input w-full" placeholder="0.00" value={formData.salary} onChange={e => setFormData({ ...formData, salary: e.target.value })} />
                                         </div>
-                                    </div>
-                                    <div className="flex flex-col gap-2">
-                                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 px-4">Salary (Annual)</label>
-                                        <input required type="number" className="glass-input text-white" placeholder="0.00" value={formData.salary} onChange={e => setFormData({ ...formData, salary: e.target.value })} />
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="flex flex-col gap-2">
-                                            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 px-4">Emergency Contact</label>
-                                            <input className="glass-input text-white" placeholder="Contact Person" value={formData.emergencyContact} onChange={e => setFormData({ ...formData, emergencyContact: e.target.value })} />
-                                        </div>
-                                        <div className="flex flex-col gap-2">
-                                            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 px-4">Blood Group</label>
-                                            <input className="glass-input text-white" placeholder="e.g. O+" value={formData.bloodGroup} onChange={e => setFormData({ ...formData, bloodGroup: e.target.value })} />
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="flex flex-col gap-1.5">
+                                                <label className="text-xs font-bold uppercase tracking-wider text-gray-500 px-1">Emergency Contact</label>
+                                                <input className="glass-input w-full" placeholder="Contact Person" value={formData.emergencyContact} onChange={e => setFormData({ ...formData, emergencyContact: e.target.value })} />
+                                            </div>
+                                            <div className="flex flex-col gap-1.5">
+                                                <label className="text-xs font-bold uppercase tracking-wider text-gray-500 px-1">Blood Group</label>
+                                                <input className="glass-input w-full" placeholder="e.g. O+" value={formData.bloodGroup} onChange={e => setFormData({ ...formData, bloodGroup: e.target.value })} />
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className="flex flex-col gap-2">
-                                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 px-4">Home Address</label>
-                                        <textarea className="glass-input text-white" placeholder="Full Address" style={{ minHeight: '120px', resize: 'vertical' }} value={formData.address} onChange={e => setFormData({ ...formData, address: e.target.value })} />
-                                    </div>
-                                </div>
-                            </div>
+                                )}
+                            </form>
+                        </div>
 
-                            <div className="flex gap-6 mt-6 pt-12 border-t border-white/10">
-                                <button type="button" onClick={() => { setShowModal(false); resetForm(); }} className="btn-action btn-ghost flex-1 text-white">Cancel</button>
-                                <button type="submit" className="btn-action btn-primary flex-[2]">
-                                    {editingEmployee ? 'Update Profile' : 'Create Account'}
-                                </button>
-                            </div>
-                        </form>
+                        <div className="bg-gray-50 border-t border-gray-100 p-6 flex gap-3 sticky bottom-0 z-10">
+                            {step === 1 ? (
+                                <>
+                                    <button type="button" onClick={() => { setShowModal(false); resetForm(); }} className="btn-action bg-white border border-gray-200 text-gray-600 hover:bg-gray-100 flex-1 py-3 text-sm">Cancel</button>
+                                    <button type="button" onClick={handleNext} className="btn-action btn-primary flex-[2] py-3 text-sm shadow-md hover:shadow-lg">Next Step →</button>
+                                </>
+                            ) : (
+                                <>
+                                    <button type="button" onClick={() => setStep(1)} className="btn-action bg-white border border-gray-200 text-gray-600 hover:bg-gray-100 flex-1 py-3 text-sm">← Back</button>
+                                    <button type="button" onClick={handleSubmit} className="btn-action btn-primary flex-[2] py-3 text-sm shadow-md hover:shadow-lg">
+                                        {editingEmployee ? 'Update Profile' : 'Create Account'}
+                                    </button>
+                                </>
+                            )}
+                        </div>
                     </div>
                 </div>
             )}

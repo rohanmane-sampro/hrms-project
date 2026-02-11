@@ -35,68 +35,67 @@ export default function AnnouncementsPage() {
     }
 
     return (
-        <div className="flex flex-col gap-12 animate-fade-in">
+        <div className="flex flex-col gap-8 animate-fade-in">
             <header>
-                <h3 className="text-indigo-400">Announcements</h3>
-                <h1 className="text-white">Company Updates</h1>
-                <p className="max-w-md">Post important news and updates for all employees to see.</p>
+                <h3 className="text-gray-500 text-sm font-bold uppercase tracking-wide mb-1">Company News</h3>
+                <h1 className="text-3xl font-bold text-gray-900">Announcements</h1>
+                <p className="text-gray-600 max-w-md">Post important news and updates for all employees to see.</p>
             </header>
 
             <div className="grid grid-cols-12 gap-8 items-start">
                 {/* Form Section */}
-                <div className="col-span-12 lg:col-span-5 bento-card border-indigo-600/10 shadow-lg shadow-indigo-600/5">
-                    <h2 className="text-2xl font-black mb-8 flex items-center gap-4 text-white">
-                        <div className="w-2 h-8 bg-indigo-600 rounded-full"></div>
-                        Post New Announcement
+                <div className="col-span-12 lg:col-span-5 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-3">
+                        <div className="w-1 h-6 bg-indigo-500 rounded-full"></div>
+                        New Announcement
                     </h2>
-                    <form onSubmit={handleSubmit} className="flex flex-col gap-8">
+                    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
                         <div className="flex flex-col gap-2">
-                            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 px-4">Title</label>
-                            <input className="glass-input text-white" required value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} placeholder="e.g. Office Holiday Notice" />
+                            <label className="text-xs font-bold uppercase tracking-wider text-gray-500 px-1">Title</label>
+                            <input className="glass-input" required value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} placeholder="e.g. Office Holiday Notice" />
                         </div>
                         <div className="flex flex-col gap-2">
-                            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 px-4">Category</label>
-                            <select className="glass-input text-white" value={form.type} onChange={e => setForm({ ...form, type: e.target.value })}>
-                                <option className="bg-black">Info</option>
-                                <option className="bg-black">Alert</option>
-                                <option className="bg-black">Success</option>
+                            <label className="text-xs font-bold uppercase tracking-wider text-gray-500 px-1">Category</label>
+                            <select className="glass-input" value={form.type} onChange={e => setForm({ ...form, type: e.target.value })}>
+                                <option>Info</option>
+                                <option>Alert</option>
+                                <option>Success</option>
                             </select>
                         </div>
                         <div className="flex flex-col gap-2">
-                            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 px-4">Message Content</label>
-                            <textarea className="glass-input text-white" required value={form.content} onChange={e => setForm({ ...form, content: e.target.value })} placeholder="Write your message here..." style={{ minHeight: '180px' }}></textarea>
+                            <label className="text-xs font-bold uppercase tracking-wider text-gray-500 px-1">Message Content</label>
+                            <textarea className="glass-input" required value={form.content} onChange={e => setForm({ ...form, content: e.target.value })} placeholder="Write your message here..." style={{ minHeight: '120px' }}></textarea>
                         </div>
-                        <button type="submit" className="btn-action btn-primary mt-4">Post Announcement</button>
+                        <button type="submit" className="btn-action btn-primary mt-2">Post Announcement</button>
                     </form>
                 </div>
 
                 {/* List Section */}
                 <div className="col-span-12 lg:col-span-7 flex flex-col gap-6">
-                    <h2 className="text-2xl font-black mb-2 flex items-center gap-4 text-white">
-                        <div className="w-2 h-8 bg-cyan-400 rounded-full"></div>
-                        Recent Announcements
+                    <h2 className="text-lg font-bold text-gray-900 mb-2 flex items-center gap-3">
+                        <div className="w-1 h-6 bg-cyan-500 rounded-full"></div>
+                        Recent Updates
                     </h2>
-                    <div className="flex flex-col gap-6">
+                    <div className="flex flex-col gap-4">
                         {loading ? (
-                            <div className="bento-card py-24 text-center opacity-30 font-black animate-pulse tracking-widest uppercase text-white">Loading...</div>
+                            <div className="bg-white border border-gray-200 rounded-xl py-12 text-center text-gray-400 animate-pulse font-medium">Loading updates...</div>
                         ) : announcements.length === 0 ? (
-                            <div className="bento-card py-24 text-center opacity-30 font-black tracking-widest uppercase border-dashed text-white">No announcements posted yet.</div>
+                            <div className="bg-white border border-gray-200 rounded-xl py-12 text-center text-gray-400 font-medium">No announcements posted yet.</div>
                         ) : (
                             announcements.map(a => {
-                                let themeColor = 'indigo-500';
-                                if (a.type === 'Alert') themeColor = 'red-500';
-                                if (a.type === 'Success') themeColor = 'emerald-400';
+                                let badgeClass = 'bg-indigo-50 text-indigo-700 border-indigo-100';
+                                if (a.type === 'Alert') badgeClass = 'bg-red-50 text-red-700 border-red-100';
+                                if (a.type === 'Success') badgeClass = 'bg-emerald-50 text-emerald-700 border-emerald-100';
 
                                 return (
-                                    <div key={a._id} className={`bento-card p-8 bg-gradient-to-r from-white/5 to-transparent border-l-4 border-l-${themeColor} hover:translate-x-2`}>
-                                        <div className="flex justify-between items-start mb-4">
-                                            <h3 className="text-xl font-black text-white mb-0 uppercase tracking-tight leading-loose">{a.title}</h3>
-                                            <span className={`badge-premium bg-${themeColor}/20 text-${themeColor === 'emerald-400' ? 'emerald-400' : themeColor} border border-${themeColor}/20`}>[{a.type.toUpperCase()}]</span>
+                                    <div key={a._id} className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-all duration-300">
+                                        <div className="flex justify-between items-start mb-3">
+                                            <h3 className="text-lg font-bold text-gray-900 leading-snug">{a.title}</h3>
+                                            <span className={`px-2.5 py-0.5 rounded text-xs font-bold uppercase tracking-wide border ${badgeClass}`}>{a.type}</span>
                                         </div>
-                                        <p className="text-gray-300 font-medium text-lg leading-relaxed mb-6">{a.content}</p>
-                                        <div className="flex items-center gap-3 pt-6 border-t border-white/5">
-                                            <div className={`w-1.5 h-1.5 rounded-full bg-${themeColor} shadow-[0_0_8px_rgba(99,102,241,0.5)]`}></div>
-                                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">Posted on: {new Date(a.createdAt).toLocaleDateString()}</span>
+                                        <p className="text-gray-600 leading-relaxed text-sm mb-4 border-b border-gray-50 pb-4">{a.content}</p>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">Posted on: {new Date(a.createdAt).toLocaleDateString()}</span>
                                         </div>
                                     </div>
                                 )

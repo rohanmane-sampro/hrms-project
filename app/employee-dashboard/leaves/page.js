@@ -49,74 +49,71 @@ export default function EmployeeLeavesPage() {
 
     if (loading) return (
         <div className="flex h-96 items-center justify-center">
-            <h2 className="text-2xl font-black animate-pulse opacity-50 uppercase tracking-widest text-white">Loading Records...</h2>
+            <h2 className="text-xl font-bold animate-pulse text-indigo-500">Loading Records...</h2>
         </div>
     );
 
     return (
-        <div className="flex flex-col gap-12 animate-fade-in pb-24 text-white">
-            <header className="flex justify-between items-end">
+        <div className="flex flex-col gap-8 animate-fade-in pb-24">
+            <header className="flex justify-between items-end border-b border-gray-100 pb-6">
                 <div>
-                    <h3 className="text-indigo-400">Leave Management</h3>
-                    <h1 className="text-white">Applied Leaves</h1>
-                    <p className="max-w-md text-gray-400">Track your leave status and apply for new time off.</p>
+                    <h3 className="text-gray-500 text-xs font-bold uppercase tracking-wide mb-1">Leaves</h3>
+                    <h1 className="text-3xl font-bold text-gray-900">Request Time Off</h1>
+                    <p className="text-gray-500 font-medium text-sm">Manage your leave balance and applications.</p>
                 </div>
-                <button className="btn-action btn-primary" onClick={() => setShowModal(true)}>
-                    + New Leave Request
+                <button className="bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm px-6 py-2.5 rounded-lg font-bold text-sm transition-all flex items-center gap-2" onClick={() => setShowModal(true)}>
+                    + New Request
                 </button>
             </header>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div className="bento-card border-indigo-600/10 hover:border-indigo-600/30">
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-2">Annual Allowance</p>
-                    <h1 className="text-6xl mb-0 leading-none text-white">18 <span className="text-xl text-indigo-400">DAYS</span></h1>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+                    <p className="text-xs font-bold uppercase tracking-wide text-gray-400 mb-1">Annual Balance</p>
+                    <h1 className="text-4xl font-black text-gray-900 leading-none">18 <span className="text-lg font-bold text-indigo-600 ml-1">Days</span></h1>
                 </div>
-                <div className="bento-card border-emerald-600/10 hover:border-emerald-600/30">
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-2">Used This Year</p>
-                    <h1 className="text-6xl mb-0 leading-none text-emerald-400">04 <span className="text-xl text-emerald-600">DAYS</span></h1>
+                <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+                    <p className="text-xs font-bold uppercase tracking-wide text-gray-400 mb-1">Used This Year</p>
+                    <h1 className="text-4xl font-black text-gray-900 leading-none">04 <span className="text-lg font-bold text-emerald-600 ml-1">Days</span></h1>
                 </div>
-                <div className="bento-card border-amber-600/10 hover:border-amber-600/30">
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-2">Pending Requests</p>
-                    <h1 className="text-6xl mb-0 leading-none text-amber-500">{leaves.filter(l => l.status === 'Pending').length} <span className="text-xl text-amber-600">UNITS</span></h1>
+                <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+                    <p className="text-xs font-bold uppercase tracking-wide text-gray-400 mb-1">Pending Approval</p>
+                    <h1 className="text-4xl font-black text-gray-900 leading-none">{leaves.filter(l => l.status === 'Pending').length} <span className="text-lg font-bold text-amber-600 ml-1">Reqs</span></h1>
                 </div>
             </div>
 
-            <div className="bento-card overflow-hidden p-0 border-white/5 bg-black/40">
-                <div className="px-8 pt-8 pb-4 border-b border-white/5">
-                    <h2 className="text-xl font-black mb-0 flex items-center gap-4 text-white uppercase">
-                        <div className="w-2 h-6 bg-indigo-600 rounded-full"></div>
-                        Leave History
-                    </h2>
+            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+                <div className="px-6 py-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                    <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wide">Leave History</h2>
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="bg-white/5 border-b border-white/10 text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400">
-                                <th className="p-6">Date Range</th>
-                                <th className="p-6">Leave Type</th>
-                                <th className="p-6">Status</th>
-                                <th className="p-6">Reason</th>
+                            <tr className="bg-white border-b border-gray-100 text-xs font-bold text-gray-400 uppercase tracking-wider">
+                                <th className="px-6 py-4">Dates</th>
+                                <th className="px-6 py-4">Type</th>
+                                <th className="px-6 py-4">Status</th>
+                                <th className="px-6 py-4">Note</th>
                             </tr>
                         </thead>
                         <tbody>
                             {leaves.length === 0 ? (
-                                <tr><td colSpan="4" className="p-24 text-center text-xl font-black opacity-30 tracking-widest italic uppercase text-white">No history found</td></tr>
+                                <tr><td colSpan="4" className="p-12 text-center text-gray-400 font-medium italic">No history found</td></tr>
                             ) : (
                                 leaves.map(l => (
-                                    <tr key={l._id} className="border-b border-white/5 hover:bg-white/5 transition-all group">
-                                        <td className="p-6 text-sm font-black text-white">
-                                            {new Date(l.startDate).toLocaleDateString()} <span className="mx-2 text-indigo-400">→</span> {new Date(l.endDate).toLocaleDateString()}
+                                    <tr key={l._id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                                        <td className="px-6 py-4 text-sm font-bold text-gray-900">
+                                            {new Date(l.startDate).toLocaleDateString()} <span className="mx-1 text-gray-400">→</span> {new Date(l.endDate).toLocaleDateString()}
                                         </td>
-                                        <td className="p-6">
-                                            <span className="badge-premium bg-white/5 text-gray-400">[{l.type.toUpperCase()}]</span>
+                                        <td className="px-6 py-4">
+                                            <span className="inline-block px-2.5 py-0.5 rounded text-xs font-bold bg-gray-100 text-gray-600 border border-gray-200 uppercase tracking-wide">{l.type}</span>
                                         </td>
-                                        <td className="p-6">
-                                            <span className={`badge-premium ${l.status === 'Approved' ? 'bg-emerald-600/20 text-emerald-400' : l.status === 'Rejected' ? 'bg-red-600/20 text-red-500' : 'bg-amber-600/20 text-amber-500'}`}>
-                                                {l.status.toUpperCase()}
+                                        <td className="px-6 py-4">
+                                            <span className={`inline-block px-2.5 py-0.5 rounded text-xs font-bold uppercase tracking-wide ${l.status === 'Approved' ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : l.status === 'Rejected' ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-amber-50 text-amber-600 border border-amber-100'}`}>
+                                                {l.status}
                                             </span>
                                         </td>
-                                        <td className="p-6">
-                                            <p className="text-xs font-medium opacity-60 max-w-xs truncate group-hover:whitespace-normal transition-all text-gray-300">{l.reason || 'No reason provided'}</p>
+                                        <td className="px-6 py-4">
+                                            <p className="text-xs text-gray-500 font-medium max-w-xs truncate">{l.reason || '-'}</p>
                                         </td>
                                     </tr>
                                 ))
@@ -127,42 +124,42 @@ export default function EmployeeLeavesPage() {
             </div>
 
             {showModal && (
-                <div className="fixed inset-0 bg-black/90 backdrop-blur-3xl z-[99999] flex items-center justify-center p-8 animate-fade-in">
-                    <div className="bento-card w-full max-w-xl border-white/10 ring-1 ring-white/5 shadow-2xl">
-                        <div className="flex justify-between items-start mb-12">
-                            <div>
-                                <h3 className="text-indigo-400">New Request</h3>
-                                <h1 className="text-4xl mb-0 uppercase text-white">Apply for Leave</h1>
-                            </div>
-                            <button onClick={() => setShowModal(false)} className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center hover:bg-red-600 hover:text-white transition-all text-xl border border-white/10 text-white">✕</button>
+                <div className="fixed inset-0 z-[99999] flex items-center justify-center px-4 pb-4 pt-24 animate-fade-in">
+                    <div className="bg-white w-full max-w-lg rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.1)] border border-gray-100 p-8 relative overflow-hidden flex flex-col">
+                        <button onClick={() => setShowModal(false)} className="absolute top-6 right-6 w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center hover:bg-gray-100 transition-colors text-gray-400 text-lg">✕</button>
+
+                        <div className="mb-6">
+                            <h3 className="text-indigo-600 font-bold text-xs uppercase tracking-wide mb-1">New Application</h3>
+                            <h1 className="text-2xl font-bold text-gray-900">Submit Leave Request</h1>
                         </div>
-                        <form onSubmit={handleSubmit} className="flex flex-col gap-8">
-                            <div className="flex flex-col gap-2">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 px-4">Leave Type</label>
-                                <select className="glass-input text-white" required value={form.type} onChange={e => setForm({ ...form, type: e.target.value })}>
-                                    <option className="bg-black">Annual</option>
-                                    <option className="bg-black">Sick</option>
-                                    <option className="bg-black">Unpaid</option>
-                                    <option className="bg-black">Other</option>
+
+                        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+                            <div className="flex flex-col gap-1.5">
+                                <label className="text-xs font-bold uppercase text-gray-500 px-1">Leave Type</label>
+                                <select className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm font-medium text-gray-900 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none" required value={form.type} onChange={e => setForm({ ...form, type: e.target.value })}>
+                                    <option>Annual</option>
+                                    <option>Sick</option>
+                                    <option>Unpaid</option>
+                                    <option>Other</option>
                                 </select>
                             </div>
-                            <div className="grid grid-cols-2 gap-6">
-                                <div className="flex flex-col gap-2">
-                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 px-4">Start Date</label>
-                                    <input type="date" required className="glass-input text-white" onChange={e => setForm({ ...form, startDate: e.target.value })} />
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="flex flex-col gap-1.5">
+                                    <label className="text-xs font-bold uppercase text-gray-500 px-1">From</label>
+                                    <input type="date" required className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm font-medium text-gray-900 outline-none focus:border-indigo-500" onChange={e => setForm({ ...form, startDate: e.target.value })} />
                                 </div>
-                                <div className="flex flex-col gap-2">
-                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 px-4">End Date</label>
-                                    <input type="date" required className="glass-input text-white" onChange={e => setForm({ ...form, endDate: e.target.value })} />
+                                <div className="flex flex-col gap-1.5">
+                                    <label className="text-xs font-bold uppercase text-gray-500 px-1">To</label>
+                                    <input type="date" required className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm font-medium text-gray-900 outline-none focus:border-indigo-500" onChange={e => setForm({ ...form, endDate: e.target.value })} />
                                 </div>
                             </div>
-                            <div className="flex flex-col gap-2">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 px-4">Reason</label>
-                                <textarea className="glass-input text-white" placeholder="Reason for leave..." style={{ minHeight: '120px' }} onChange={e => setForm({ ...form, reason: e.target.value })}></textarea>
+                            <div className="flex flex-col gap-1.5">
+                                <label className="text-xs font-bold uppercase text-gray-500 px-1">Reason</label>
+                                <textarea className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm font-medium text-gray-900 outline-none focus:border-indigo-500" placeholder="Please provide a reason..." style={{ minHeight: '100px' }} onChange={e => setForm({ ...form, reason: e.target.value })}></textarea>
                             </div>
-                            <div className="flex gap-4 pt-6 mt-4 border-t border-white/10">
-                                <button type="button" className="btn-action btn-ghost flex-1 text-white" onClick={() => setShowModal(false)}>Cancel</button>
-                                <button type="submit" className="btn-action btn-primary flex-[2]">Submit Request</button>
+                            <div className="flex gap-4 mt-4 pt-4 border-t border-gray-100">
+                                <button type="button" className="flex-1 py-3 bg-white border border-gray-200 text-gray-600 font-bold text-sm rounded-lg hover:bg-gray-50 transition-colors" onClick={() => setShowModal(false)}>Cancel</button>
+                                <button type="submit" className="flex-[2] py-3 bg-indigo-600 text-white font-bold text-sm rounded-lg hover:bg-indigo-700 shadow-md hover:shadow-lg transition-all">Submit Application</button>
                             </div>
                         </form>
                     </div>

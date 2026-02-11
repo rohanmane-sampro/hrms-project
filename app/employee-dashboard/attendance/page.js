@@ -34,58 +34,58 @@ export default function EmployeeAttendancePage() {
 
     if (loading) return (
         <div className="flex h-96 items-center justify-center">
-            <h2 className="text-2xl font-black animate-pulse opacity-50 uppercase tracking-[0.3em]">Accessing Session History...</h2>
+            <h2 className="text-xl font-bold animate-pulse text-indigo-500">Loading History...</h2>
         </div>
     );
 
     return (
-        <div className="flex flex-col gap-12 animate-fade-in">
-            <header className="flex justify-between items-end">
+        <div className="flex flex-col gap-8 animate-fade-in pb-24">
+            <header className="flex justify-between items-end border-b border-gray-100 pb-6">
                 <div>
-                    <h3 className="text-indigo-400">Personal Records</h3>
-                    <h1>Session History</h1>
-                    <p className="max-w-md">Detailed cryptographic log of all your recorded operational sessions.</p>
+                    <h3 className="text-gray-500 text-xs font-bold uppercase tracking-wide mb-1">My Records</h3>
+                    <h1 className="text-3xl font-bold text-gray-900">Attendance History</h1>
+                    <p className="text-gray-500 font-medium text-sm">View your daily check-ins and status logs.</p>
                 </div>
-                <div className="badge-premium bg-indigo-600/10 text-indigo-400 border border-indigo-600/20 px-8 py-4">
-                    SYNCED: {new Date().toLocaleTimeString()}
+                <div className="px-4 py-2 bg-gray-50 border border-gray-100 rounded-lg text-gray-600 font-bold text-xs uppercase tracking-wide">
+                    Live Sync
                 </div>
             </header>
 
-            <div className="bento-card overflow-hidden p-0 border-white/5 bg-black/20">
-                <div className="px-8 pt-8 pb-4 border-b border-white/5 bg-white/5">
-                    <h2 className="text-xl font-black mb-0 flex items-center gap-4 text-white">
-                        <div className="w-2 h-6 bg-cyan-400 rounded-full shadow-[0_0_8px_rgba(34,211,238,0.8)]"></div>
-                        DATA LOG ENTRIES
+            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+                <div className="px-6 py-4 border-b border-gray-100 bg-gray-50">
+                    <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wide flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+                        Data Logs
                     </h2>
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="bg-white/5 border-b border-white/10 text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400">
-                                <th className="p-6">CYCLE DATE</th>
-                                <th className="p-6">STATUS CODE</th>
-                                <th className="p-6">CHECK-IN TIME</th>
-                                <th className="p-6">LAST METADATA UPDATE</th>
+                            <tr className="bg-white border-b border-gray-100 text-xs font-bold text-gray-400 uppercase tracking-wider">
+                                <th className="px-6 py-4">Date</th>
+                                <th className="px-6 py-4">Status</th>
+                                <th className="px-6 py-4">Time In</th>
+                                <th className="px-6 py-4">Last Update</th>
                             </tr>
                         </thead>
                         <tbody>
                             {attendance.length === 0 ? (
-                                <tr><td colSpan="4" className="p-24 text-center text-xl font-black opacity-30 tracking-widest italic uppercase">Zero session logs detected.</td></tr>
+                                <tr><td colSpan="4" className="p-12 text-center text-gray-400 font-medium italic">No attendance records found.</td></tr>
                             ) : (
                                 attendance.map(a => (
-                                    <tr key={a._id} className="border-b border-white/5 hover:bg-white/5 transition-all group">
-                                        <td className="p-6 text-sm font-black text-white group-hover:text-cyan-400 transition-colors">
+                                    <tr key={a._id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors group">
+                                        <td className="px-6 py-4 text-sm font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">
                                             {new Date(a.date).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}
                                         </td>
-                                        <td className="p-6">
-                                            <span className={`badge-premium ${a.status === 'Present' ? 'bg-emerald-600/20 text-emerald-400 border-emerald-600/30' : a.status === 'Half-Day' ? 'bg-amber-600/20 text-amber-500 border-amber-600/30' : 'bg-red-600/20 text-red-500 border-red-600/30'}`}>
-                                                {a.status.toUpperCase()}
+                                        <td className="px-6 py-4">
+                                            <span className={`inline-block px-2.5 py-0.5 rounded text-xs font-bold uppercase tracking-wide ${a.status === 'Present' ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : a.status === 'Half-Day' ? 'bg-amber-50 text-amber-600 border border-amber-100' : 'bg-red-50 text-red-600 border border-red-100'}`}>
+                                                {a.status}
                                             </span>
                                         </td>
-                                        <td className="p-6 font-mono text-indigo-400">
-                                            {a.checkIn ? new Date(a.checkIn).toLocaleTimeString([], { hour12: true, hour: '2-digit', minute: '2-digit' }) : 'NULL'}
+                                        <td className="px-6 py-4 font-mono text-xs text-gray-600 font-bold bg-gray-50/50 rounded-lg">
+                                            {a.checkIn ? new Date(a.checkIn).toLocaleTimeString([], { hour12: true, hour: '2-digit', minute: '2-digit' }) : '-'}
                                         </td>
-                                        <td className="p-6 text-xs text-gray-500 font-medium">
+                                        <td className="px-6 py-4 text-xs text-gray-400 font-medium">
                                             {new Date(a.updatedAt).toLocaleString()}
                                         </td>
                                     </tr>

@@ -1,54 +1,54 @@
 export default function SettingsPage() {
     return (
-        <div className="flex flex-col gap-12 animate-fade-in max-w-4xl">
+        <div className="flex flex-col gap-8 animate-fade-in max-w-4xl">
             <header>
-                <h3 className="text-indigo-400">Core Configuration</h3>
-                <h1>System Preferences</h1>
-                <p className="max-w-md">Manage neural link parameters and structural database integrity.</p>
+                <h3 className="text-gray-500 text-sm font-bold uppercase tracking-wide mb-1">Configuration</h3>
+                <h1 className="text-3xl font-bold text-gray-900">System Settings</h1>
+                <p className="text-gray-600 max-w-md">Manage application preferences and security settings.</p>
             </header>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Visual Settings */}
-                <div className="bento-card">
-                    <h2 className="text-2xl font-black mb-8 flex items-center gap-4">
-                        <div className="w-2 h-8 bg-indigo-600 rounded-full"></div>
-                        CORE VISUALS
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-3">
+                        <div className="w-1 h-6 bg-indigo-500 rounded-full"></div>
+                        Appearance & Notifications
                     </h2>
 
-                    <div className="flex flex-col gap-6">
-                        <div className="flex justify-between items-center p-6 bg-white/5 rounded-2xl border border-white/5 group">
+                    <div className="flex flex-col gap-4">
+                        <div className="flex justify-between items-center p-4 bg-gray-50 rounded-lg border border-gray-100">
                             <div>
-                                <p className="font-black text-white uppercase tracking-tight group-hover:text-indigo-400 transition-all">TERMINAL DARK MODE</p>
-                                <span className="text-[10px] font-black uppercase text-gray-500 tracking-[0.2em]">Always active: Nexus v1.0</span>
+                                <p className="font-bold text-gray-800 text-sm mb-1">Theme Preference</p>
+                                <span className="text-xs font-medium text-gray-500">Currently using Light Mode</span>
                             </div>
-                            <div className="w-12 h-6 bg-indigo-600/20 rounded-full p-1 border border-indigo-600/30">
-                                <div className="w-4 h-4 bg-indigo-600 rounded-full shadow-[0_0_8px_rgba(99,102,241,0.8)]"></div>
+                            <div className="px-2 py-1 bg-indigo-50 text-indigo-600 text-xs font-bold rounded border border-indigo-100 uppercase tracking-wide">
+                                Light
                             </div>
                         </div>
 
-                        <div className="flex justify-between items-center p-6 bg-white/5 rounded-2xl border border-white/5 group">
+                        <div className="flex justify-between items-center p-4 bg-gray-50 rounded-lg border border-gray-100">
                             <div>
-                                <p className="font-black text-white uppercase tracking-tight group-hover:text-cyan-400 transition-all">NEURAL NOTIFICATIONS</p>
-                                <span className="text-[10px] font-black uppercase text-gray-500 tracking-[0.2em]">Real-time broadcast sync</span>
+                                <p className="font-bold text-gray-800 text-sm mb-1">Email Notifications</p>
+                                <span className="text-xs font-medium text-gray-500">Receive updates via email</span>
                             </div>
-                            <input type="checkbox" className="w-6 h-6 rounded-lg bg-white/5 border-white/10 checked:bg-indigo-600 transition-all cursor-pointer" defaultChecked />
+                            <input type="checkbox" className="w-5 h-5 rounded text-indigo-600 focus:ring-indigo-500 border-gray-300 cursor-pointer" defaultChecked />
                         </div>
                     </div>
                 </div>
 
                 {/* Security Settings */}
-                <div className="bento-card border-red-600/10">
-                    <h2 className="text-2xl font-black mb-8 flex items-center gap-4 text-red-500">
-                        <div className="w-2 h-8 bg-red-600 rounded-full"></div>
-                        VOID PROTOCOL
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-3">
+                        <div className="w-1 h-6 bg-red-500 rounded-full"></div>
+                        Danger Zone
                     </h2>
 
-                    <div className="p-8 bg-black/40 rounded-3xl border border-red-600/20">
-                        <h4 className="text-lg font-black text-white uppercase mb-2 tracking-tight">TOTAL SYSTEM RESET</h4>
-                        <p className="text-sm font-medium text-gray-500 mb-8 leading-relaxed">Initialization of this protocol will permanently wipe all organizational clusters, specialists, and neural broadcast logs.</p>
+                    <div className="p-6 bg-red-50 rounded-xl border border-red-100">
+                        <h4 className="text-sm font-bold text-red-800 uppercase mb-2">System Reset</h4>
+                        <p className="text-xs font-medium text-red-600 mb-6 leading-relaxed">Permanently delete all data including employees, departments, and records. This action cannot be undone.</p>
 
-                        <button className="btn-action bg-red-600/20 text-red-500 hover:bg-red-600 hover:text-white border border-red-600/20 w-full group">
-                            <span className="group-hover:animate-ping mr-2">⚠️</span> PURGE ALL DATA
+                        <button className="w-full py-2.5 bg-white text-red-600 font-bold text-sm rounded-lg border border-red-200 hover:bg-red-50 hover:border-red-300 transition-all flex items-center justify-center gap-2">
+                            <span>⚠️</span> Factory Reset
                         </button>
                     </div>
                 </div>

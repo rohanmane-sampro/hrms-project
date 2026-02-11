@@ -1,9 +1,7 @@
 "use client";
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 
 export default function EmployeeDashboard() {
-    const router = useRouter();
     const [user, setUser] = useState(null);
     const [attendance, setAttendance] = useState([]);
     const [announcements, setAnnouncements] = useState([]);
@@ -25,7 +23,7 @@ export default function EmployeeDashboard() {
     async function fetchAnnouncements() {
         const res = await fetch('/api/announcements');
         const data = await res.json();
-        if (data.success) setAnnouncements(data.data.slice(0, 3)); // Show top 3
+        if (data.success) setAnnouncements(data.data.slice(0, 3));
     }
 
     async function fetchMe() {
@@ -36,14 +34,14 @@ export default function EmployeeDashboard() {
             fetchAttendance(data.user.id);
             fetchLeaves(data.user.id);
         } else {
-            router.push('/login');
+            window.location.href = '/login';
         }
     }
 
     async function fetchAttendance(id) {
         const res = await fetch(`/api/attendance?employeeId=${id}`);
         const data = await res.json();
-        if (data.success) setAttendance(data.data.slice(0, 5)); // Just the last 5
+        if (data.success) setAttendance(data.data.slice(0, 5));
     }
 
     async function fetchLeaves(id) {
@@ -85,43 +83,43 @@ export default function EmployeeDashboard() {
 
     if (!user) return (
         <div className="flex h-96 items-center justify-center">
-            <h2 className="text-2xl font-black animate-pulse opacity-50 uppercase tracking-[0.3em] text-white">Loading Portal...</h2>
+            <h2 className="text-xl font-medium text-gray-400 animate-pulse">Loading Portal...</h2>
         </div>
     );
 
     const todayMarked = attendance.some(a => new Date(a.date).toDateString() === new Date().toDateString());
 
     return (
-        <div className="flex flex-col gap-12 animate-fade-in pb-24">
+        <div className="flex flex-col gap-8 animate-fade-in pb-24">
             {/* Header */}
-            <header className="flex justify-between items-end">
+            <header className="flex justify-between items-end border-b border-gray-100 pb-8">
                 <div>
-                    <h3 className="text-indigo-400">Employee Portal</h3>
-                    <h1 className="text-6xl font-black text-white">Welcome, {user.name.split(' ')[0]}</h1>
-                    <p className="max-w-md font-medium text-gray-500 uppercase tracking-widest text-[10px]">{user.role} | {user.email}</p>
+                    <h3 className="text-gray-500 text-sm font-bold uppercase tracking-wide mb-1">Employee Portal</h3>
+                    <h1 className="text-4xl font-bold text-gray-900 mb-2">Welcome, {user.name.split(' ')[0]}</h1>
+                    <p className="text-gray-500 font-medium">{user.role} | {user.email}</p>
                 </div>
-                <div className="badge-premium bg-indigo-600/10 text-indigo-400 border border-indigo-600/20 flex items-center gap-4 px-8 py-5">
-                    <div className="w-2 h-2 rounded-full bg-indigo-500 shadow-[0_0_12px_rgba(99,102,241,0.8)] animate-pulse"></div>
-                    SECURE LOGIN
+                <div className="flex items-center gap-2 px-4 py-2 bg-indigo-50 border border-indigo-100 rounded-lg text-indigo-700 font-bold text-xs uppercase tracking-wide">
+                    <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+                    Secure Login
                 </div>
             </header>
 
             {/* Announcements Banner */}
             {announcements.length > 0 && (
                 <div className="flex flex-col gap-6">
-                    <h2 className="text-2xl font-black mb-2 flex items-center gap-4 text-white">
-                        <div className="w-2 h-8 bg-indigo-600 rounded-full"></div>
-                        COMPANY ANNOUNCEMENTS
+                    <h2 className="text-lg font-bold text-gray-900 mb-2 flex items-center gap-3">
+                        <div className="w-1 h-6 bg-indigo-500 rounded-full"></div>
+                        Company Announcements
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {announcements.map(a => (
-                            <div key={a._id} className="bento-card border-indigo-600/10 p-8 hover:scale-[1.02] transition-transform">
-                                <span className={`badge-premium text-[10px] ${a.type === 'Alert' ? 'bg-red-600/20 text-red-500' : 'bg-indigo-600/20 text-indigo-400'}`}>[{a.type.toUpperCase()}]</span>
-                                <h4 className="text-xl font-black mt-6 mb-3 uppercase tracking-tight leading-tight text-white">{a.title}</h4>
-                                <p className="text-sm font-medium line-clamp-2 opacity-60 mb-6 leading-relaxed">{a.content}</p>
-                                <div className="pt-6 border-t border-white/5 flex justify-between items-center">
-                                    <span className="text-[10px] font-black uppercase text-gray-500 tracking-widest">{new Date(a.createdAt).toLocaleDateString()}</span>
-                                    <span className="text-indigo-400 text-xs font-black uppercase tracking-widest cursor-pointer hover:underline underline-offset-4">Read More →</span>
+                            <div key={a._id} className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-all">
+                                <span className={`inline-block px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wide mb-3 ${a.type === 'Alert' ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-indigo-50 text-indigo-600 border border-indigo-100'}`}>{a.type}</span>
+                                <h4 className="text-lg font-bold text-gray-900 mb-2 leading-tight">{a.title}</h4>
+                                <p className="text-sm text-gray-600 line-clamp-2 mb-4 leading-relaxed">{a.content}</p>
+                                <div className="pt-4 border-t border-gray-50 flex justify-between items-center text-xs font-medium text-gray-400">
+                                    <span>{new Date(a.createdAt).toLocaleDateString()}</span>
+                                    <span className="text-indigo-600 hover:underline cursor-pointer">Read More →</span>
                                 </div>
                             </div>
                         ))}
@@ -131,62 +129,63 @@ export default function EmployeeDashboard() {
 
             <div className="grid grid-cols-12 gap-8">
                 {/* Daily Marking Card */}
-                <div className="col-span-12 lg:col-span-4 bento-card bg-indigo-600/5 border-indigo-600/20 flex flex-col items-center justify-center py-16 text-center group relative overflow-hidden">
-                    <div className="absolute top-[-20%] right-[-20%] w-64 h-64 bg-indigo-600/10 blur-[80px] rounded-full"></div>
-                    <h3 className="text-indigo-400 mb-2 relative">ATTENDANCE</h3>
-                    <h1 className="text-8xl font-black mb-1 p-0 leading-none group-hover:scale-105 transition-transform duration-700 relative text-white">
+                <div className="col-span-12 lg:col-span-4 bg-white rounded-xl border border-gray-200 p-8 flex flex-col items-center justify-center text-center shadow-sm hover:shadow-md transition-all relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-bl-full -mr-8 -mt-8 opacity-50 group-hover:scale-110 transition-transform"></div>
+
+                    <h3 className="text-gray-400 font-bold text-xs uppercase tracking-widest mb-4 z-10">Attendance</h3>
+                    <h1 className="text-6xl font-black text-gray-900 mb-2 z-10 font-mono tracking-tight">
                         {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </h1>
-                    <p className="text-sm font-black uppercase tracking-[0.4em] text-gray-500 mb-12 relative">
-                        {new Date().toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'short' })}
+                    <p className="text-sm font-bold text-gray-500 uppercase tracking-wide mb-8 z-10">
+                        {new Date().toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long' })}
                     </p>
 
-                    <div className="w-full max-w-xs flex flex-col gap-4 relative">
+                    <div className="w-full max-w-xs flex flex-col gap-3 z-10">
                         {todayMarked ? (
-                            <div className="badge-premium bg-emerald-600/20 text-emerald-400 border border-emerald-600/30 px-12 py-5 rounded-3xl flex items-center justify-center gap-3 font-black tracking-widest">
-                                <span className="text-2xl">✓</span> ATTENDANCE MARKED
+                            <div className="bg-emerald-50 text-emerald-700 border border-emerald-100 px-6 py-4 rounded-xl flex items-center justify-center gap-2 font-bold text-sm">
+                                <span className="text-lg">✓</span> Marked Present
                             </div>
                         ) : (
-                            <button onClick={() => markAttendance('Present')} disabled={marking} className="btn-action btn-primary w-full py-6 shadow-glow">
-                                {marking ? 'MARKING...' : 'MARK ATTENDANCE'}
+                            <button onClick={() => markAttendance('Present')} disabled={marking} className="bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-500/20 w-full py-4 rounded-xl font-bold text-sm transition-all active:scale-[0.98]">
+                                {marking ? 'Marking...' : 'Mark Present'}
                             </button>
                         )}
 
                         <button
                             onClick={() => setShowLeaveModal(true)}
-                            className="btn-action btn-ghost w-full py-6 font-black tracking-widest text-white"
+                            className="bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 hover:text-gray-900 w-full py-4 rounded-xl font-bold text-sm transition-all"
                         >
-                            REQUEST LEAVE
+                            Request Time Off
                         </button>
                     </div>
                 </div>
 
                 {/* Leave Status & History */}
-                <div className="col-span-12 lg:col-span-8 flex flex-col gap-8">
-                    <div className="bento-card flex-1">
-                        <div className="flex justify-between items-center mb-10">
-                            <h2 className="text-2xl font-black mb-0 text-white">LEAVE STATUS</h2>
-                            <a href="/employee-dashboard/leaves" className="text-[10px] font-black uppercase text-indigo-400 tracking-widest hover:underline">View All Requests →</a>
+                <div className="col-span-12 lg:col-span-8 flex flex-col gap-6">
+                    <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-lg font-bold text-gray-900">Leave Status</h2>
+                            <a href="/employee-dashboard/leaves" className="text-xs font-bold text-indigo-600 hover:underline">View All →</a>
                         </div>
-                        <div className="flex flex-col gap-6">
+                        <div className="flex flex-col gap-4">
                             {leaves.length === 0 ? (
-                                <div className="border border-dashed border-white/10 rounded-3xl p-16 text-center">
-                                    <p className="opacity-30 font-black tracking-[0.3em] uppercase italic text-sm text-white">No leave requests found</p>
+                                <div className="border border-dashed border-gray-200 rounded-xl p-8 text-center bg-gray-50">
+                                    <p className="text-gray-400 font-medium text-sm italic">No recent leave requests</p>
                                 </div>
                             ) : (
                                 leaves.slice(0, 2).map(l => (
-                                    <div key={l._id} className="flex justify-between items-center p-8 glass-panel hover:bg-white/5 transition-all group">
-                                        <div className="flex items-center gap-8">
-                                            <div className="w-16 h-16 rounded-[1.5rem] bg-indigo-600/20 flex items-center justify-center font-black text-2xl text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white transition-all">
-                                                {l.type[0].toUpperCase()}
+                                    <div key={l._id} className="flex justify-between items-center p-4 rounded-lg bg-gray-50 border border-gray-100 hover:bg-white hover:shadow-sm transition-all">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-12 h-12 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-xl">
+                                                {l.type[0]}
                                             </div>
                                             <div>
-                                                <p className="text-xl font-black uppercase tracking-tighter text-white">{l.type} LEAVE</p>
-                                                <span className="text-[10px] font-black text-gray-500 tracking-[0.2em] uppercase">{new Date(l.startDate).toLocaleDateString()} <span className="text-indigo-400">→</span> {new Date(l.endDate).toLocaleDateString()}</span>
+                                                <p className="font-bold text-gray-900 text-sm mb-0.5">{l.type} Leave</p>
+                                                <span className="text-xs font-medium text-gray-500">{new Date(l.startDate).toLocaleDateString()} to {new Date(l.endDate).toLocaleDateString()}</span>
                                             </div>
                                         </div>
-                                        <span className={`badge-premium px-8 py-3 rounded-2xl ${l.status === 'Approved' ? 'bg-emerald-600/20 text-emerald-400 border-emerald-600/20' : l.status === 'Pending' ? 'bg-amber-600/20 text-amber-500 border-amber-600/20' : 'bg-red-600/20 text-red-400 border-red-600/20'}`}>
-                                            {l.status.toUpperCase()}
+                                        <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${l.status === 'Approved' ? 'bg-emerald-100 text-emerald-700' : l.status === 'Pending' ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'}`}>
+                                            {l.status}
                                         </span>
                                     </div>
                                 ))
@@ -195,30 +194,30 @@ export default function EmployeeDashboard() {
                     </div>
 
                     {/* Attendance History */}
-                    <div className="bento-card overflow-hidden p-0 bg-black/40">
-                        <div className="px-8 pt-8 pb-4 border-b border-white/5">
-                            <h2 className="text-xl font-black mb-0 uppercase text-white">Recent Attendance Logs</h2>
+                    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+                        <div className="px-6 py-4 border-b border-gray-100 bg-gray-50">
+                            <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wide">Recent Logs</h2>
                         </div>
                         <div className="overflow-x-auto">
                             <table className="w-full text-left border-collapse">
                                 <thead>
-                                    <tr className="bg-white/5 text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400">
-                                        <th className="p-6">DATE</th>
-                                        <th className="p-6">STATUS</th>
-                                        <th className="p-6">CHECK-IN TIME</th>
+                                    <tr className="bg-white border-b border-gray-100 text-xs font-bold text-gray-400 uppercase tracking-wider">
+                                        <th className="px-6 py-3 font-semibold">Date</th>
+                                        <th className="px-6 py-3 font-semibold">Status</th>
+                                        <th className="px-6 py-3 font-semibold">Check In</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {attendance.map(a => (
-                                        <tr key={a._id} className="border-b border-white/5 hover:bg-white/5 transition-all group">
-                                            <td className="p-6 text-sm font-black text-white">{new Date(a.date).toLocaleDateString('en-US', { day: '2-digit', month: 'short' })}</td>
-                                            <td className="p-6">
-                                                <span className={`badge-premium text-[10px] ${a.status === 'Present' ? 'text-emerald-400' : 'text-amber-500'}`}>
-                                                    {a.status.toUpperCase()}
+                                        <tr key={a._id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                                            <td className="px-6 py-4 text-sm font-bold text-gray-900">{new Date(a.date).toLocaleDateString('en-US', { day: '2-digit', month: 'short' })}</td>
+                                            <td className="px-6 py-4">
+                                                <span className={`inline-block px-2 py-0.5 rounded text-xs font-bold ${a.status === 'Present' ? 'text-emerald-600 bg-emerald-50 border border-emerald-100' : 'text-amber-600 bg-amber-50 border border-amber-100'}`}>
+                                                    {a.status}
                                                 </span>
                                             </td>
-                                            <td className="p-6 text-[10px] font-mono text-indigo-400 opacity-60">
-                                                {a.checkIn ? new Date(a.checkIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '---'}
+                                            <td className="px-6 py-4 text-sm font-mono text-gray-500">
+                                                {a.checkIn ? new Date(a.checkIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-'}
                                             </td>
                                         </tr>
                                     ))}
@@ -231,42 +230,41 @@ export default function EmployeeDashboard() {
 
             {/* Leave Modal */}
             {showLeaveModal && (
-                <div className="fixed inset-0 bg-black/90 backdrop-blur-3xl z-[99999] flex items-center justify-center p-8 animate-fade-in">
-                    <div className="bento-card w-full max-w-xl border-white/10 ring-1 ring-white/10 shadow-2xl p-12">
-                        <div className="flex justify-between items-start mb-16">
-                            <div>
-                                <h3 className="text-indigo-400 mb-1">Leave Request</h3>
-                                <h1 className="text-5xl font-black mb-0 text-white">Request Time Off</h1>
-                            </div>
-                            <button onClick={() => setShowLeaveModal(false)} className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center hover:bg-red-600 hover:text-white transition-all text-xl border border-white/10 text-white">✕</button>
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
+                    <div className="bg-white w-full max-w-lg rounded-2xl shadow-2xl p-8 animate-fade-in relative">
+                        <button onClick={() => setShowLeaveModal(false)} className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors text-xl">✕</button>
+
+                        <div className="mb-8">
+                            <h3 className="text-indigo-600 font-bold text-xs uppercase tracking-wide mb-1">New Request</h3>
+                            <h1 className="text-2xl font-bold text-gray-900">Apply for Leave</h1>
                         </div>
 
-                        <form onSubmit={submitLeave} className="flex flex-col gap-8">
-                            <div className="flex flex-col gap-3">
-                                <label className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 px-6">Leave Type</label>
-                                <select className="glass-input py-6 text-xl text-white" value={leaveForm.type} onChange={e => setLeaveForm({ ...leaveForm, type: e.target.value })}>
-                                    <option className="bg-black">Annual</option>
-                                    <option className="bg-black">Sick</option>
-                                    <option className="bg-black">Unpaid</option>
+                        <form onSubmit={submitLeave} className="flex flex-col gap-6">
+                            <div className="flex flex-col gap-2">
+                                <label className="text-xs font-bold uppercase text-gray-500">Leave Type</label>
+                                <select className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-900 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none" value={leaveForm.type} onChange={e => setLeaveForm({ ...leaveForm, type: e.target.value })}>
+                                    <option>Annual</option>
+                                    <option>Sick</option>
+                                    <option>Unpaid</option>
                                 </select>
                             </div>
-                            <div className="grid grid-cols-2 gap-8">
-                                <div className="flex flex-col gap-3">
-                                    <label className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 px-6">Start Date</label>
-                                    <input type="date" className="glass-input py-6 text-white" required onChange={e => setLeaveForm({ ...leaveForm, startDate: e.target.value })} />
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="flex flex-col gap-2">
+                                    <label className="text-xs font-bold uppercase text-gray-500">From</label>
+                                    <input type="date" className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-900 outline-none focus:border-indigo-500" required onChange={e => setLeaveForm({ ...leaveForm, startDate: e.target.value })} />
                                 </div>
-                                <div className="flex flex-col gap-3">
-                                    <label className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 px-6">End Date</label>
-                                    <input type="date" className="glass-input py-6 text-white" required onChange={e => setLeaveForm({ ...leaveForm, endDate: e.target.value })} />
+                                <div className="flex flex-col gap-2">
+                                    <label className="text-xs font-bold uppercase text-gray-500">To</label>
+                                    <input type="date" className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-900 outline-none focus:border-indigo-500" required onChange={e => setLeaveForm({ ...leaveForm, endDate: e.target.value })} />
                                 </div>
                             </div>
-                            <div className="flex flex-col gap-3">
-                                <label className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 px-6">Reason for Leave</label>
-                                <textarea className="glass-input p-6 text-sm text-white" placeholder="Provide a reason for your leave request..." style={{ minHeight: '140px' }} onChange={e => setLeaveForm({ ...leaveForm, reason: e.target.value })}></textarea>
+                            <div className="flex flex-col gap-2">
+                                <label className="text-xs font-bold uppercase text-gray-500">Reason</label>
+                                <textarea className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-900 outline-none focus:border-indigo-500" placeholder="Why are you taking leave?" style={{ minHeight: '100px' }} onChange={e => setLeaveForm({ ...leaveForm, reason: e.target.value })}></textarea>
                             </div>
-                            <div className="flex gap-6 pt-12 mt-4 border-t border-white/10">
-                                <button type="button" onClick={() => setShowLeaveModal(false)} className="btn-action btn-ghost flex-1 py-6 font-black uppercase tracking-widest text-white">Cancel</button>
-                                <button type="submit" className="btn-action btn-primary flex-[2] py-6 font-black uppercase tracking-widest shadow-glow">Submit Leave</button>
+                            <div className="flex gap-4 mt-4">
+                                <button type="button" onClick={() => setShowLeaveModal(false)} className="flex-1 py-3 rounded-lg border border-gray-200 text-gray-600 font-bold text-sm hover:bg-gray-50">Cancel</button>
+                                <button type="submit" className="flex-[2] py-3 rounded-lg bg-indigo-600 text-white font-bold text-sm hover:bg-indigo-700 shadow-lg shadow-indigo-500/20">Submit Request</button>
                             </div>
                         </form>
                     </div>
